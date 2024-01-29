@@ -20,11 +20,11 @@ function multiply(a, b) {
 
 // Division
 function divide(a, b) {
-//     if (b !== 0) {
-//          return a / b;
-//     } else {
-//         return "Cannot divide by zero";
-//     }
+     if (b !== 0) {
+          return a / b;
+     } else {
+         return "Cannot divide by zero";
+     }
 }
 
 // Examples
