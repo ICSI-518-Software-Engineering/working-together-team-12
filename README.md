@@ -1,3 +1,11 @@
+# Red -Bonendra Kadanti
+# Blue - Sai Charan Kanukula
+## Subgroups 
+# Group 1 - Sai Hemanth Vasagiri
+# Group 2 - Sai Siddartha Narishetty
+# Group 3 - Varshini Rama
+# Group 4 - Sai Narashimha Reddy Ayluri
+
 # calculator-template
 
 This template is created as an assignment for ICSI 518. You will use this template to understand the basic commands in git.
