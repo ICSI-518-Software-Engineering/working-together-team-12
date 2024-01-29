@@ -22,3 +22,21 @@ git checkout <branch_name>
 
 ### Pull changes from git
 git pull origin main/master/<branch_name>
+<!-- 
+ACTIVTY 1 
+RED TEAM: - Bonendra kadanti , Vasagiri sai Hemanth, Ayuluri sai narasimha reddy                    
+Blue  Team : sai charan reddy kanukula , Narisetty sai siddharatha, Varshini 
+ACTIVITY 2:
+Implement addition function : Vasagiri sai Hemanth 
+Implement substraction function: Varshini , Sai charan reddy kanukula
+Implement multiplication function : Narisetty sai siddharatha, Bonendra kadanti 
+Implement  division function: Ayuluri Sai narasimha reddy    
+ ACTIVITY 3:
+Implement addition function : Vasagiri sai Hemanth 
+Implement substraction function: Varshini , Sai charan reddy kanukula 
+Implement multiplication function : Narisetty sai siddharatha, Bonendra kadanti   
+Implement  division function: Ayuluri sai narasimha reddy    
+
+ ICSI-518-Software-Engineering/working-together-team-12: working-together-team-12 created by GitHub Classroom -->
+
+
