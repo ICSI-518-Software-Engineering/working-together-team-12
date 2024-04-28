@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form id="flight-form" action="{% url 'confirm_hotel_booking' %}" method="post" >
+    <h2 class="payment-portal-header">Booking & Passenger Confirmation</h2>
+    <div class="container">
+        <div>
+            
+        <p><strong>Hotel Name:</strong>{{ hotel.name }}
+        <p><strong>Hotel Address:</strong>{{ hotel.full_address }}
+        <p><strong>Hotel Contact Number:</strong>{{ hotel.phone_number }}
+        <p><strong>Rating:</strong>{{ hotel.rating }}
+        <p><strong>price:</strong><span id = "price"> $140 per day </span>
+        
+        
+        <input type="text" value = "{{ hotel.name }}" name = "hotel_name" hidden>
+        <input type="text" value = "{{ hotel.full_address }}" name = "full_address" hidden>
+        <input type="text" value = "{{ hotel.phone_number }}" name = "phone_number" hidden>
+        <input type="text" value = "{{ hotel.rating }}" name = "rating" hidden>
+
+        </div>
+        <p><strong>From Date:</strong>
+            <input type="date" id="from_date" name="from_date" required>
+        </p>
+        <p><strong>To Date:</strong>
+            <input type="date" id="to_date" name="to_date"required>
+        </p>
+
+        <p>Total Days: <span id="total_days"></span></p>
+        <input type="text"  name = "totaldays" id ="text_totaldays" hidden>
+
+
+        <p>Total cost: <span id="total_cost"></span></p>
+        <input type="text"  name = "totalcost" id ="text_totalcost" hidden>
+
+
+
+    </div>
+
+    <div class="container">
+        <h2>Add customer Details</h2>
+            {% csrf_token %}
+            <div id="passengerContainer">
+                <!-- Passenger fields will be added here -->
+            </div>
+            <button type="button" id="addPassengerBtn">Add Customer</button>
+    </div>
+
+    <div class="container">
+        <p>Total Price: <input type="text" id="totalprice" name="totalprice" value= 0 hidden/>  </p>
+        <h2>Confirm Payment Method</h2>
+        <div class="custom-select-wrapper">
+            <select name="payment_method">
+                {% for option in payment_options %}
+                    <option value="{{ option.id }}">Card ending in {{ option.card_number|slice:"-4:" }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="container">
+        <button type="submit" id="addPassengerBtn">Confirm Booking</button>
+    </div>
+
+</form>
+<script>
+    
+document.addEventListener('DOMContentLoaded', function() {
+        var passengerContainer = document.getElementById('passengerContainer');
+        var addPassengerBtn = document.getElementById('addPassengerBtn');
+
+        var index = 0; // Initialize a counter outside the event listener
+        var total_passengers = 0; 
+
+        addPassengerBtn.addEventListener('click', function() {
+    var newFieldSet = document.createElement('fieldset');
+    newFieldSet.innerHTML = `
+        <legend>Customer</legend>
+        <label for="fname_${index}">First Name:</label>
+        <input type="text" name="fname_${index}" id="fname_${index}" required>
+        <label for="lname_${index}">Last Name:</label>
+        <input type="text" name="lname_${index}" id="lname_${index}" required>
+        <label for="age_${index}">Age:</label>
+        <input type="number" name="age_${index}" id="age_${index}" required>
+        <label for="dl_number_${index}">D/L Number:</label>
+        <input type="text" name="dl_number_${index}" id="dl_number_${index}" required>
+        <button type="button" class="removePassengerBtn">Remove</button>
+    `;
+    total_passengers++;
+    document.getElementById('totalprice').value =  total_passengers * parseFloat(document.getElementById('price').innerText);
+    passengerContainer.appendChild(newFieldSet);
+
+    // Add remove functionality
+    newFieldSet.querySelector('.removePassengerBtn').addEventListener('click', function() {
+        passengerContainer.removeChild(newFieldSet);
+        total_passengers--;
+        document.getElementById('totalprice').value =  total_passengers * parseFloat(document.getElementById('price').innerText);
+    });
+    index++; // Increment the index each time a new passenger is added
+});
+
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const fromDateInput = document.getElementById('from_date');
+    const toDateInput = document.getElementById('to_date');
+    const totalDaysSpan = document.getElementById('total_days');
+    const totalCostSpan = document.getElementById('total_cost');
+
+    const totalDaystext = document.getElementById('text_totaldays');
+    const totalCosttext = document.getElementById('text_totalcost');
+
+
+    function calculateDays() {
+        const fromDate = fromDateInput.value;
+        const toDate = toDateInput.value;
+        if (fromDate && toDate) {
+            const startDate = new Date(fromDate);
+            const endDate = new Date(toDate);
+            const timeDiff = endDate - startDate;
+            const daysDiff = Math.round(timeDiff / (1000 * 3600 * 24));
+
+            if (daysDiff >= 0) {
+                totalDaysSpan.textContent = daysDiff;
+                totalDaystext.value = daysDiff;
+                totalCostSpan.textContent = daysDiff * 140
+                totalCosttext.value = daysDiff * 140
+
+            } else {
+                totalDaysSpan.textContent = 'Start date must be earlier than end date';
+            }
+        } else {
+            totalDaysSpan.textContent = ''; // Clear text if one or both dates are missing
+        }
+    }
+
+    fromDateInput.addEventListener('change', calculateDays);
+    toDateInput.addEventListener('change', calculateDays);
+});
+
+</script>
+
+
+
+
+
+<style>
+    #passengerContainer fieldset {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.removePassengerBtn {
+    margin-top: 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+    .container {
+        max-width: 600px;
+        margin: 3px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: left;
+    }
+
+    h2 {
+        text-align: center;
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    p {
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 10px 0;
+    }
+
+    p strong {
+        color: #333;
+        font-weight: 600;
+    }
+
+    form {
+        margin-top: 20px;
+    }
+
+    select, button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f8f8f8;
+        box-sizing: border-box; 
+    }
+
+    button {
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+    .payment-portal-header {
+        text-align: center;
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 30px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+        .container {
+            width: 90%;
+            padding: 10px;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+
+        p {
+            font-size: 14px;
+        }
+    }
+
+
+
+
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+.custom-select-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .custom-select-wrapper select {
+        width: 100%;
+        cursor: pointer;
+        text-indent: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        appearance: none; 
+        -webkit-appearance: none; /* For Safari */
+        -moz-appearance: none; /* For Firefox */
+        background-color: #f8f8f8;
+    }
+
+    /* Creating the custom arrow */
+    .custom-select-wrapper::after {
+        content: '▼'; /* Dropdown arrow */
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        pointer-events: none; 
+        color: #333;
+        font-size: 12px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock %}

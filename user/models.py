@@ -80,6 +80,7 @@ class AirportLOCID(models.Model):
         return self.cid
     
 class FlightBooking(models.Model):
+    user = models.CharField(max_length=20, default ="123")
     booking_id = models.CharField(max_length=20, unique=True)
     arrival_time = models.TimeField()
     arrival_airport = models.CharField(max_length=100)
@@ -94,6 +95,52 @@ class FlightBooking(models.Model):
 
 class Passenger(models.Model):
     booking = models.ForeignKey(FlightBooking, on_delete=models.CASCADE, related_name="passengers")
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    age = models.IntegerField()
+    dl_number = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+    
+
+class HotelBooking(models.Model):
+    user = models.CharField(max_length=20, default ="123")
+    booking_id = models.CharField(max_length=100, unique=True)
+    hotel_name = models.CharField(max_length=100)
+    business_id = models.CharField(max_length=100)
+    checkin_date = models.DateField()
+    checkout_date = models.DateField()
+    duration = models.IntegerField(help_text="Duration in days")
+    price = models.FloatField()
+    payment_card_ending = models.CharField(max_length=4)
+
+    def __str__(self):
+        return f"Booking ID {self.booking_id} at {self.arrival_airport}"
+
+class HotelCustomer(models.Model):
+    booking = models.ForeignKey(HotelBooking, on_delete=models.CASCADE, related_name="passengers")
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    age = models.IntegerField()
+    dl_number = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
+
+
+class RestrauntBooking(models.Model):
+    user = models.CharField(max_length=20, default ="123")
+    booking_id = models.CharField(max_length=100, unique=True)
+    restraunt_name = models.CharField(max_length=100)
+    business_id = models.CharField(max_length=100)
+    visit_date = models.DateField()
+    payment_card_ending = models.CharField(max_length=4)
+    def __str__(self):
+        return f"Booking ID {self.booking_id} at {self.arrival_airport}"
+
+class RestrauntCustomer(models.Model):
+    booking = models.ForeignKey(RestrauntBooking, on_delete=models.CASCADE, related_name="passengers")
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     age = models.IntegerField()

@@ -16,10 +16,51 @@
             <p>You have no bookings.</p>
         {% endfor %}
     </div>
+
+    <div class="bookings-container">
+        {% for booking in flight_bookings %}
+            <div class="booking-card">
+                <h3>ID: {{ booking.0 }}</h3>
+                <p>Departure: {{ booking.1 }}</p>
+                <p>Arrival Airport: {{ booking.2 }}</p>
+                <p>Flight Duration: {{ booking.3 }} minutes</p>
+                <p>Price: {{ booking.4 }}</p>
+            </div>
+        {% empty %}
+            <p>You have no bookings.</p>
+        {% endfor %}
+    </div>
+
+    <div class="bookings-container">
+        {% for booking in hotel_bookings %}
+            <div class="booking-card">
+                <h3>ID: {{ booking.0 }}</h3>
+                <p>Hotel Name: {{ booking.1 }}</p>
+                <p>Check In Date: {{ booking.2 }}</p>
+                <p>Check Out Date: {{ booking.3 }} </p>
+                <p>Price: {{ booking.4 }}</p>
+            </div>
+        {% empty %}
+            <p>You have no bookings.</p>
+        {% endfor %}
+    </div>
+
+    <div class="bookings-container">
+        {% for booking in restraunt_bookings %}
+            <div class="booking-card">
+                <h3>ID: {{ booking.0 }}</h3>
+                <p>Restraunt Name: {{ booking.1 }}</p>
+                <p>Visit Date: {{ booking.2 }} </p>
+            </div>
+        {% empty %}
+            <p>You have no bookings.</p>
+        {% endfor %}
+    </div>
 </div>
+
     <style>
         body{
-        /* background: url("/static/profile_bg.jpg"); */
+        background: url("/static/profile_bg.jpg");
         }
         .booking-history .booking-history-header {
         text-align: center;
@@ -34,6 +75,8 @@
             display: flex;
             flex-wrap: wrap;
             gap: 20px; /* Spacing between cards */
+            margin-top: 10px;
+
         }
         .booking-history .booking-card {
             flex: 0 1 calc(33.333% - 20px); /* Three cards per row, adjust spacing as needed */
