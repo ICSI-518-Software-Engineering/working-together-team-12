@@ -252,3 +252,28 @@
     }
 </style>
 {% endblock %}
+
+    <!-- <form method="POST" enctype="multipart/form-data" class="profile-form">
+        {% csrf_token %}
+        <div class="form-section">
+            {% if user.userprofile.profile_pic %}
+                <div class="current-profile-pic">
+                    <img src="{{ user.userprofile.profile_pic.url }}" alt="Current profile pic" class="img-responsive">
+                </div>
+            {% endif %}
+            {{ profile_form.as_p }}
+        </div>
+        <button type="submit" class="update-btn">Update Profile</button>
+    </form> -->
+<!-- Profile Form -->
+
+
+ <!-- {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-lg btn-primary btn-block animated-button">Register</button> -->
+
+
+        '{% static "movies_c.png" %}',
+'{% static "Flights_c.jpeg" %}',
+'{% static "Hotels_c.jpg" %}',
+'{% static "Restaurants_c.jpg" %}',
