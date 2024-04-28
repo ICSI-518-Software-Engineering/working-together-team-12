@@ -166,6 +166,132 @@ def save_selection(request):
 
 
 
+def movies_home(request):
+    theaters_url = "https://flixster.p.rapidapi.com/theaters/list"  
+    
+    latest_selection = CitySelection.objects.filter(user=request.user).order_by('-created').first()
+    # print(latest_selection)
+    if latest_selection is not None:
+
+        parts = latest_selection.city_name.split(',')
+        if len(parts) >= 2:
+            city_name = parts[0].strip()  
+            state_name = parts[1].strip() 
+        matching_city = City.objects.filter(city_name=city_name, state_name=state_name).first()    
+        if matching_city:
+                    data = {
+                        'city_name': matching_city.city_name,
+                        'state_name': matching_city.state_name,
+                        'latitude': str(matching_city.lat),
+                        'longitude': str(matching_city.lng)
+                    }
+    else:
+         data = {
+                        'city_name': 'Albany',
+                        'state_name': 'New York',
+                        'latitude': '42.6850',
+                        'longitude': '73.8248'
+                    }                 
+        
+    theaters_query = {"latitude":data['latitude'],"longitude":data['longitude'], "radius": "50"}
+    print(theaters_query)
+    theaters_headers = {
+        "X-RapidAPI-Key": "f980ede61dmshd87d831abfdc365p13d4e5jsncfcae06fb6c8",  
+        "X-RapidAPI-Host": "flixster.p.rapidapi.com"
+    }
+    theaters_response = requests.get(theaters_url, headers=theaters_headers, params=theaters_query)
+    theaters_data = theaters_response.json()['data']['theaters'][:10] 
+    movies_dict = {}
+    # print("theatres:",theaters_data)
+
+
+    for theater in theaters_data:
+        if theater.get('hasShowtimes') == "true":
+            detail_url = "https://flixster.p.rapidapi.com/theaters/detail"
+            detail_query = {"id": theater.get('id')}
+            print(theater.get('id'))
+            detail_response = requests.get(detail_url, headers=theaters_headers, params=detail_query)
+            detail_data = detail_response.json()
+
+            movies = detail_data.get('data', {}).get('theaterShowtimeGroupings', {}).get('movies', [])
+            for movie in movies:
+                print("movie",movie)
+                emsVersionId = movie.get('emsVersionId')
+                if emsVersionId:  
+                    if emsVersionId not in movies_dict:
+                        if movie.get('posterImage', {}):
+                            if movie.get('tomatoRating') and 'tomatometer' in movie['tomatoRating']:
+                                rating = movie['tomatoRating']['tomatometer']
+                            else:
+                                rating = random.randint(50, 95)
+                            movies_dict[emsVersionId] = {
+                                'name': movie.get('name'),
+                                'image_url': movie.get('posterImage', {}).get('url'),
+                                'rating': rating,
+                                'theaters': {}
+                            }
+                    
+                    showtimes = []
+                    for variant in movie.get('movieVariants', []):
+                        for group in variant.get('amenityGroups', []):
+                            for showtime in group.get('showtimes', []):
+                                showtimes.extend([showtime['sdate']])
+
+                    showtimes = list(set(showtimes))
+                    if movie.get('posterImage', {}):
+                    
+                        movies_dict[emsVersionId]['theaters'][theater.get('id')] = {
+                            'name': theater.get('name'),
+                            'showtimes': showtimes,
+                            'emsVersionId':emsVersionId
+                        }
+
+    # print(movies_dict)
+    for movie_id, movie in movies_dict.items():
+        for theater_id, theater_info in movie['theaters'].items():
+            formatted_showtimes = []
+            for showtime in theater_info['showtimes']:
+                # Split the showtime string and keep only the time part
+                formatted_showtimes.append(showtime.split('+')[1] if '+' in showtime else showtime)
+            theater_info['showtimes'] = formatted_showtimes
+    request.session['movies_dict'] = movies_dict
+    return render(request, 'movies_home.html', {'movies_dict': movies_dict,'city_name':f"{matching_city.city_name}, {matching_city.state_id}"})
+
+def movie_detail(request, emsVersionId):
+    movies_dict = request.session.get('movies_dict', {})
+    url = "https://flixster.p.rapidapi.com/movies/detail"
+
+    querystring = {"emsVersionId":emsVersionId}
+
+    headers = {
+        "X-RapidAPI-Key": "f980ede61dmshd87d831abfdc365p13d4e5jsncfcae06fb6c8",
+        "X-RapidAPI-Host": "flixster.p.rapidapi.com"
+    }
+
+    response = requests.get(url, headers=headers, params=querystring)
+    mvin = response.json().get('data', {}).get('movie', {})
+    genres = mvin.get('genres', [])
+    movie_data={
+        "synopsis":mvin.get('synopsis', 'No synopsis available'),
+        "poster_image":mvin.get('posterImage', {}).get('url', 'No image available'),
+        "genres":[genre.get('name', 'No genre') for genre in genres],
+        "rating":mvin.get('tomatoRating', {}).get('tomatometer', 'No rating available')
+    }
+
+
+    movie = movies_dict.get(emsVersionId)
+    # print(movie)
+    if not movie:
+        return redirect('movies_home')  
+
+    return render(request, 'movie_detail.html', {'movie': movie,'movie_data':movie_data})
+def showtime_detail(request, emsVersionId, theaterId, showtime):
+    context = {
+        'emsVersionId': emsVersionId,
+        'theaterId': theaterId,
+        'showtime': showtime,
+    }
+    return render(request, 'showtime_detail.html', context)
 
 
 
