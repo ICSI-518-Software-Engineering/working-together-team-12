@@ -1,0 +1,113 @@
+select {
+    -webkit-appearance: none; /* for Chrome, Safari */
+    -moz-appearance: none;    /* for Firefox */
+    appearance: none;         /* for modern browsers */
+    background: url('down-arrow-icon.png') no-repeat right; /* Path to your down arrow icon */
+    background-size: 20px 20px; /* Adjust size as needed */
+    padding-right: 30px; /* Make space for the icon */
+    /* Additional styling here (border, padding, etc.) */
+  }
+  
+#cityPopup {
+    position: fixed;
+    width: 60%; /* Adjust width as needed */
+    height: 400px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f2f2f2; /* Light background */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Adjust for grid layout */
+    gap: 10px; /* Space between items */
+    justify-items: center;
+    align-items: center;
+}
+
+.cityOption {
+    background-color: transparent;
+    border: none;
+    color: #333; /* Dark text color */
+    cursor: pointer;
+    padding: 10px;
+    text-align: center;
+}
+
+.cityOption:hover {
+    background-color: #ddd; /* Light hover effect */
+}
+
+/* Optional: Lines to separate items, adjust as needed */
+.cityOption:not(:last-child) {
+    border-bottom: 1px solid #ccc;
+}
+
+
+/* Blur the background */
+body.blurred {
+    filter: blur(5px);
+}
+
+/* 3D effect for the popup content */
+.popup-content {
+    transform: perspective(600px) rotateX(10deg) rotateY(10deg);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#movies_now .card {
+    width: 200px; /* Width of the card */
+    height: 300px; /* Height of the card */
+    display: inline-block; /* Display cards next to each other */
+    margin: 5px; /* Optional: adds some space around each card */
+    margin-right: 10px;
+    vertical-align: top; /* Aligns cards at the top */
+    overflow: hidden; /* Ensures content fits within the card size */
+  }
+  
+  #movies_now .card img {
+    width: 100%; /* Make image fully occupy the card width */
+    height: 100%; /* Make image fully occupy the card height */
+    object-fit: cover; /* Cover the area without distorting the image */
+    cursor: pointer;
+  }
+  #movie-cinemas-container {
+    display: flex;
+    flex-wrap: wrap;
+    overflow-y: auto;
+    max-height: 90vh;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.cinema-card {
+    flex: 0 0 100%;
+    display: flex;
+    /* flex-basis: calc(20% - 20px); */
+    justify-content: space-between;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.cinema-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.cinema-name, .cinema-time {
+    display: block;
+    padding: 5px 10px;
+}
+
+.cinema-time {
+    margin-left: auto;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    cursor: pointer;
+}
