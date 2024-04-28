@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Movies Playing in {{city_name}}</h1>
+    <div class="row">
+        {% for emsVersionId, movie in movies_dict.items %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card h-100">
+                    <a href="{% url 'movie_detail' emsVersionId=emsVersionId %}"> 
+                        {% if movie.image_url %}
+                            <img src="{{ movie.image_url }}" class="card-img-top" alt="{{ movie.name }}">
+                        {% endif %}
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ movie.name }}</h5>
+                        <p>Tomato Rating: {{movie.rating}}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<style>
+    .card {
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out; 
+    transform: perspective(1000px) rotateY(0deg); 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+}
+.cinema-card img {
+    max-height: 100px; 
+    width: auto; /* Maintain aspect ratio */
+    margin-bottom: 10px; /* Space between image and cinema info */
+}
+.card:hover {
+    transform: perspective(1000px) rotateY(10deg);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
+}
+
+</style>
+{% endblock %}

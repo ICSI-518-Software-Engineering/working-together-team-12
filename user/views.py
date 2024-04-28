@@ -117,7 +117,51 @@ def home(request):
     return render(request, 'startingpage.html')
 
 
+def select_seats(request, movie_name, theater_name, showtime):
+    tickets = MovieTickets.objects.filter(
+        movie=movie_name, 
+        theater=theater_name,
+        showtime=showtime,
+        payment=True
+    )
+    booked_seats = []
+    for ticket in tickets:
+        booked_seats.extend(ticket.tickets.split(','))
 
+    booked_seats = [seat.strip() for seat in booked_seats]
+    context = {
+        'movie_name': movie_name,
+        'theatre_name': theater_name,
+        'showtime': showtime,
+        'booked_seats': booked_seats,
+    }
+    print(booked_seats)
+    return render(request, 'seat.html', context)
+@csrf_exempt
+def booking_view(request):
+    if request.method == 'POST':
+        body_unicode = request.body.decode('utf-8')
+        body_data = json.loads(body_unicode)
+        print(body_data)
+        showtime = body_data.get('showtime', '')
+        date = body_data.get('date', '')
+        seats = body_data.get('seats', '')
+        movie_name=body_data.get('movieName', '')
+        theatre_name=body_data.get('theaterName', '')
+
+        created = MovieTickets.objects.create(
+            user=request.user,
+            movie=movie_name.strip(),
+            theater=theatre_name.strip(),
+            showtime=showtime.strip(),
+            tickets= seats.strip()  
+        )    
+        print(f"/paymentportal/{movie_name}/booking_id/{created.booking_id}/theatre/{theatre_name}/showtime/{showtime}/ticket_count/{len(seats.split(','))}")
+        # return JsonResponse({'success': True, 'redirect_url': f"/paymentportal/{movie_name}/booking_id/{created.booking_id}/theatre/{theatre_name}/showtime/{showtime}/ticket_count/{len(seats.split(','))}"})
+        return JsonResponse({'success': True, 'redirect_url': f"/paymentportal/{created.booking_id}"})
+
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 def search_cities(request):
     if 'term' in request.GET:
         qs = City.objects.filter(city_name__icontains=request.GET.get('term'))[:5]
