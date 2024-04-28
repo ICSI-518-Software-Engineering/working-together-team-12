@@ -7,7 +7,7 @@
         <div class="container mt-5" style="background-color: rgba(255, 255, 255, 0.6);backdrop-filter: blur(8px);  color: #000 !important; padding: 20px; border-radius: 8px;">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="display-4">{{ restraunt.name }}</h1>
-                <a href="{% if restraunt.booking_link %}{{ restraunt.booking_link }}{% else %}#booking{% endif %}" class="btn btn-warning">Book Now</a>
+                <a href="/book_restraunt/{{business_id}}" class="btn btn-warning">Book Now</a>
             </div>
             <div class="row mb-4">
                 <div class="col-md-12">
@@ -44,8 +44,6 @@
     
     <style>
             #restraunt_detail{
-        
-        background-image: url("/static/Restaurants_c.jpg");
             position: relative; 
             height: 100vh; 
             width: 100%; 
