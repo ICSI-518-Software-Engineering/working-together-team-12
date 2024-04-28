@@ -3,59 +3,47 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="tab-container">
-<div class="tab">
-    <button class="tablinks" onclick="openTab(event, 'Profile')">Personal Details</button>
-    <button class="tablinks" onclick="openTab(event, 'Address')">Address Details</button>
-    <button class="tablinks" id = "paymentdetails_tab_button" onclick="openTab(event, 'PaymentDetails')">Payment Details</button>
-    <button class="tablinks" onclick="openTab(event, 'AddPayment')" hidden>Add Payment</button>
-    <button class="tablinks"  onclick="openTab(event, 'History')">Bookings</button>
-  </div>
-
-  <div id="Profile" class="tabcontent">
+<div class="profile-main">
     <div class="profile-container">
+        <h2>Edit Profile</h2>
     
     <form id="profileForm" method="POST" enctype="multipart/form-data" class="profile-form">
-        
         <div class="form-group">
             <label for="profileImage">Profile Image:</label>
             {% if user_profile.profile_pic %}
-                <img src="{{ user_profile.profile_pic.url }}" alt="Current Profile Pic" class="profile-pic">
-                <input type="file" id="profileImage" name="profileImage" class="file-input">
-            {% else %}
-                <div class="no-image">
-                    Upload Picture
-                    <input type="file" id="profileImage" name="profileImage" class="file-input">
-                </div>
+                <img src="{{ user_profile.profile_pic.url }}" alt="Current Profile Pic" height="100">
             {% endif %}
+            <input type="file" id="profileImage" name="profileImage">
         </div>
-
         <input type="text" style="display: none;"   id="form-type" name="type" value="profileForm">
-        <div class="form-row">
-            <div class="form-group half-width">
-                <label for="firstName">First Name <span class="required-mark">(*) : </span> </label>
-                <input type="text" id="firstName" name="firstName" required value="{{ user_profile.name|default_if_none:'' }}">
-            </div>
-
-            <div class="form-group half-width">
-                <label for="middleName">Middle Name:</label>
-                <input type="text" id="middleName" name="middleName" required value="{{ user_profile.mname|default_if_none:'' }}">
-            </div>
-
-            <div class="form-group">
-                <label for="lastName">Last Name <span class="required-mark">(*) : </span></label>
-                <input type="text" id="lastName" name="lastName" required value="{{ user_profile.lname|default_if_none:'' }}">
-            </div>
-
+    
+        <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" required value="{{ user_profile.name|default_if_none:'' }}">
         </div>
-        
-        <div class="form-row">
-            <div class="form-group half-width">
-                <label for="email">Email <span class="required-mark">(*) : </span></label>
-                <input type="email" id="email" name="email" required value="{{ user_profile.email|default_if_none:'' }}">
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" required value="{{ user_profile.lname|default_if_none:'' }}">
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required value="{{ user_profile.email|default_if_none:'' }}">
+        </div>
+        <div class="form-group" id="addressGroup">
+            <label>Address:</label>
+            <input type="text" id="flatDetails" name="flatDetails" placeholder="Flat No" required value="{{ user_profile.address|default_if_none:'' }}">
+            <input type="text" id="line1" name="line1" placeholder="Line 1" value="{{ user_profile.line1|default_if_none:'' }}">
+            <input type="text" id="line2" name="line2" placeholder="Line 2" value="{{ user_profile.line2|default_if_none:'' }}">
+            <div class="form-row">
+                <div class="form-group half-width">
+                    <input type="text" id="state" name="state" placeholder="State" required value="{{ user_profile.state|default_if_none:'' }}">
+                </div>
+                <div class="form-group half-width">
+                    <input type="text" id="country" name="country" placeholder="Country" required value="{{ user_profile.country|default_if_none:'' }}">
+                </div>
             </div>
-        
-        <div class="form-group half-width">
+        </div>
+        <div class="form-group">
             <label>Phone:</label>
             <div class="phno_content">
                 <div class="countryCode">
@@ -69,116 +57,72 @@
                 </div>
             </div>
         </div>
-    </div>
         <button type="button" id="updateProfileBtn" class="update-btn">Update Profile</button>
     </form>
     
-  </div>
-  </div>
-  
-  <div id="Address" class="tabcontent">
-    <div class="profile-container">
     
-    <form id="AddressForm" method="POST" enctype="multipart/form-data" class="profile-form">
-        <div class="form-group" id="addressGroup">
-            <label>Address:</label>
-            <input type="text" id="flatDetails" name="flatDetails" placeholder="Flat No"  value="{{ user_profile.address|default_if_none:'' }}">
-            <input type="text" id="line1" name="line1" placeholder="Line 1" value="{{ user_profile.line1|default_if_none:'' }}">
-            <input type="text" id="line2" name="line2" placeholder="Line 2" value="{{ user_profile.line2|default_if_none:'' }}">
-            <div class="form-row">
-                
-                <div class="form-group half-width">
-                    <input type="text" id="city" name="city" placeholder="City" required value="{{ user_profile.city|default_if_none:'' }}">
-                </div>
-
-                <div class="form-group half-width">
-                    <input list = "states" id="state" name="state" placeholder="State" required value="{{ user_profile.state|default_if_none:'' }}">
-                    <datalist id="states">
-                        <option value="Alabama"></option>
-                        <option value="Alaska"></option>
-                        <option value="Arizona"></option>
-                        <option value="Arkansas"></option>
-                        <option value="California"></option>
-                        <option value="Colorado"></option>
-                        <option value="Connecticut"></option>
-                        <option value="Delaware"></option>
-                        <option value="Florida"></option>
-                        <option value="Georgia"></option>
-                        <option value="Hawaii"></option>
-                        <option value="Idaho"></option>
-                        <option value="Illinois"></option>
-                        <option value="Indiana"></option>
-                        <option value="Iowa"></option>
-                        <option value="Kansas"></option>
-                        <option value="Kentucky"></option>
-                        <option value="Louisiana"></option>
-                        <option value="Maine"></option>
-                        <option value="Maryland"></option>
-                        <option value="Massachusetts"></option>
-                        <option value="Michigan"></option>
-                        <option value="Minnesota"></option>
-                        <option value="Mississippi"></option>
-                        <option value="Missouri"></option>
-                        <option value="Montana"></option>
-                        <option value="Nebraska"></option>
-                        <option value="Nevada"></option>
-                        <option value="New Hampshire"></option>
-                        <option value="New Jersey"></option>
-                        <option value="New Mexico"></option>
-                        <option value="New York"></option>
-                        <option value="North Carolina"></option>
-                        <option value="North Dakota"></option>
-                        <option value="Ohio"></option>
-                        <option value="Oklahoma"></option>
-                        <option value="Oregon"></option>
-                        <option value="Pennsylvania"></option>
-                        <option value="Rhode Island"></option>
-                        <option value="South Carolina"></option>
-                        <option value="South Dakota"></option>
-                        <option value="Tennessee"></option>
-                        <option value="Texas"></option>
-                        <option value="Utah"></option>
-                        <option value="Vermont"></option>
-                        <option value="Virginia"></option>
-                        <option value="Washington"></option>
-                        <option value="West Virginia"></option>
-                        <option value="Wisconsin"></option>
-                        <option value="Wyoming"></option>
-                    </datalist>
-                </div>
-                
-                
-                
-                <div class="form-group half-width">
-                    <input type="text" id="zipcode" name="zipcode" placeholder="Zip Code" required value="{{ user_profile.zipcode|default_if_none:'' }}">
-                </div>
+        <h3>Add Payment Detail</h3>
+        <form id="paymentForm" method="POST" class="payment-form">
+            <div class="form-group">
+                <label for="cardNumber">Card Number:</label>
+                <input type="text" id="card_number" name="cardNumber" value="{{ payment_details.card_number|default:'' }}" required>
             </div>
-        </div>
-        
-        <button type="button" id="updateAddressBtn" class="update-btn">Update Address</button>
-    </form>
+        <input type="text" style="display: none;" id="form-type1" name="type" value="paymentForm">
     
-  </div>
-  </div>
-  
-
-  <div id="PaymentDetails" class="tabcontent">
-    <div class="profile-container" style="height: 100%;">
-        <h4>Saved Cards</h4>
-        <div class="payment-details-card" >
-            <!-- <h3 class="payment-details-header">Payment Details</h3> -->
+            <div class="form-group">
+                <label for="cvv">CVV:</label>
+                <input type="password" id="cvv" name="cvv" value="{{ payment_details.cvv|default:'' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="cardHolderName">Card Holder Name:</label>
+                <input type="text" id="card_holder_name" name="cardHolderName" value="{{ payment_details.card_holder_name|default:'' }}" required>
+            </div>
+            <div class="form-group">
+                <label for="expiryMonth">Expiry Month:</label>
+                <select id="expiry_month" name="expiryMonth" required>
+                    <option value="1">1</option>
+                    <script>
+                        const selectedMonth = "{{ payment_details.expiry_month|default_if_none:'' }}"; 
+                        
+                        for (let i = 2; i <= 12; i++) {
+                            // Check if current iteration matches the selectedMonth
+                            const isSelected = i.toString() === selectedMonth;
+                            document.write(`<option value="${i}" ${isSelected ? 'selected' : ''}>${i}</option>`);
+                        }
+                    </script>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="expiryYear">Expiry Year:</label>
+                <select id="expiry_year" name="expiryYear" required>
+                    <option value="2024">2024</option>
+                    <script>
+                        const selectedYear = "{{ payment_details.expiry_year|default_if_none:'' }}"; 
+                        
+                        const currentYear = 2024;
+                        for (let i = currentYear+1; i <= currentYear + 20; i++) {
+                            const isSelected = i.toString() === selectedYear;
+                            document.write(`<option value="${i}" ${isSelected ? 'selected' : ''}>${i}</option>`);
+                        }
+                    </script>
+                </select>
+            </div>
+            <button type="button" id="addPaymentBtn" class="add-payment-btn">Add Payment</button>
+        </form>
+        
+    
+        <div class="payment-details-card">
+            <h3 class="payment-details-header">Payment Details</h3>
             <ul class="payment-details-list">
                 {% for payment_detail in user.userprofile.payment_details.all %}
                 <li class="payment-detail-item">
-                    <strong> </strong> {{ payment_detail.card_holder_name }}
+                    <strong>Card Holder Name:</strong> {{ payment_detail.card_holder_name }}
                     <strong>Card Number:</strong> **** **** **** {{ payment_detail.card_number|slice:"-4:" }}
                     <strong>Expiry Date:</strong> {{ payment_detail.expiry_date|date:"m/Y" }}
                     <form method="post" action="{% url 'delete_payment_info' %}">
                         {% csrf_token %}
                         <input type="hidden" name="payment_detail_card_number" value="{{ payment_detail.card_number }}">
-                        <!-- <button type="submit" class="remove-card-btn">Remove Card</button> -->
-                        <button class="delete-card-btn" data-card-number="{{ payment_detail.card_number }}"><i class="fas fa-trash-alt"></i></button>
-
+                        <button type="submit" class="remove-card-btn">Remove Card</button>
                     </form>
                 </li>
                 {% empty %}
@@ -186,433 +130,14 @@
                 {% endfor %}
             </ul>
         </div>
-        <button class="new-payment-btn" onclick="openTab(event, 'AddPayment')" >AddNew Payment</button>
     </div>
-  </div>
-  
-  <div id="AddPayment" class="tabcontent">
-    <!-- Content of paymentForm -->
-    <!-- Embed your payment form here -->
-    <form id="paymentForm" method="POST" class="payment-form">
-        <div class="form-group">
-            <label for="cardNumber">Card Number:</label>
-            <input type="text" id="card_number" name="cardNumber" value="{{ payment_details.card_number|default:'' }}" required>
-        </div>
-    <input type="text" style="display: none;" id="form-type1" name="type" value="paymentForm">
-
-        <div class="form-group">
-            <label for="cvv">CVV:</label>
-            <input type="password" id="cvv" name="cvv" value="{{ payment_details.cvv|default:'' }}" required>
-        </div>
-        <div class="form-group">
-            <label for="cardHolderName">Card Holder Name:</label>
-            <input type="text" id="card_holder_name" name="cardHolderName" value="{{ payment_details.card_holder_name|default:'' }}" required>
-        </div>
-        <div class="form-group">
-            <label for="expiryMonth">Expiry Month:</label>
-            <select id="expiry_month" name="expiryMonth" required>
-                <option value="1">1</option>
-                <script>
-                    const selectedMonth = "{{ payment_details.expiry_month|default_if_none:'' }}"; 
-                    
-                    for (let i = 2; i <= 12; i++) {
-                        // Check if current iteration matches the selectedMonth
-                        const isSelected = i.toString() === selectedMonth;
-                        document.write(`<option value="${i}" ${isSelected ? 'selected' : ''}>${i}</option>`);
-                    }
-                </script>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="expiryYear">Expiry Year:</label>
-            <select id="expiry_year" name="expiryYear" required>
-                <option value="2024">2024</option>
-                <script>
-                    const selectedYear = "{{ payment_details.expiry_year|default_if_none:'' }}"; 
-                    
-                    const currentYear = 2024;
-                    for (let i = currentYear+1; i <= currentYear + 20; i++) {
-                        const isSelected = i.toString() === selectedYear;
-                        document.write(`<option value="${i}" ${isSelected ? 'selected' : ''}>${i}</option>`);
-                    }
-                </script>
-            </select>
-        </div>
-        <button type="button" id="addPaymentBtn" class="add-payment-btn">Add Payment</button>
-    </form>
-  </div>
-
-  <div id = "History" class="tabcontent">
-    <div class="booking-history profile-container">
-        <h5>Movie Booking</h5>
-        <table class="bookings-table">
-            <thead>
-                <tr>
-                    <th>Booking ID</th>
-                    <th>Movie</th>
-                    <th>Theater</th>
-                    <th>Showtime</th>
-                    <th>Seats</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for booking in bookings %}
-                <tr>
-                    <td>{{ booking.booking_id }}</td>
-                    <td>{{ booking.movie }}</td>
-                    <td>{{ booking.theater }}</td>
-                    <td>{{ booking.showtime }}</td>
-                    <td>{{ booking.tickets }}</td>
-                    <td data-toggle="modal" data-target="#ReviewModal" id="{{booking.booking_id}}">Review</td>
-
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4">You have no bookings.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        
-        <div class="modal fade" id="ReviewModal" tabindex="-1" role="dialog" aria-labelledby="ReviewModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="ReviewModalLabel">Review</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="width: 10%;">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                            <div class="form-group">
-                                <label for="Rating">Rating :</label>
-                                <input type="text" class="form-control" id="Rating" name="card_number" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="Comments">Comments:</label>
-                                <input type="text" class="form-control" id="Comments" name="card_holder_name" required>
-                            </div>
-
-                    </div>
-                    
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" form="ReviewForm" id = "ReviewFormSubmit" >Save Review</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        
-        <h5>Flight Booking</h5>
-        <table class="flight-bookings-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Departure</th>
-                    <th>Arrival Airport</th>
-                    <th>Flight Duration</th>
-                    <th>Price</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for booking in flight_bookings %}
-                <tr>
-                    <td>{{ booking.0 }}</td>
-                    <td>{{ booking.1 }}</td>
-                    <td>{{ booking.2 }}</td>
-                    <td>{{ booking.3 }} minutes</td>
-                    <td>{{ booking.4 }}</td>
-                    <td data-toggle="modal" data-target="#ReviewModal" id="{{booking.0}}">Review</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5">You have no bookings.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        
-        
-        <h5> Hotel Bookings</h5>
-        <table class="hotel-bookings-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Hotel Name</th>
-                    <th>Check In Date</th>
-                    <th>Check Out Date</th>
-                    <th>Duration</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for booking in hotel_bookings %}
-                <tr>
-                    <td>{{ booking.0 }}</td>
-                    <td>{{ booking.1 }}</td>
-                    <td>{{ booking.2 }}</td>
-                    <td>{{ booking.3 }}</td>
-                    <td>{{ booking.4 }}</td>
-                    <td data-toggle="modal" data-target="#ReviewModal" id="{{booking.0}}">Review</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5">You have no bookings.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        
-        
-        <h5> Restraunt Bookings</h5>
-        <table class="restaurant-bookings-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Restaurant Name</th>
-                    <th>Visit Date</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for booking in restraunt_bookings %}
-                <tr>
-                    <td>{{ booking.0 }}</td>
-                    <td>{{ booking.1 }}</td>
-                    <td>{{ booking.2 }}</td>
-                    <td data-toggle="modal" data-target="#ReviewModal" id="{{booking.0}}">Review</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3">You have no bookings.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        
-    </div>    
-  </div>
-  
 </div>
+
+
 <style>
-
-table{
-    margin-bottom: 15px;
-}
-
-.restaurant-bookings-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.restaurant-bookings-table th,
-.restaurant-bookings-table td {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    text-align: left;
-}
-
-.restaurant-bookings-table th {
-    background-color: #7e7e7e;
-    color: white;
-}
-
-.restaurant-bookings-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.restaurant-bookings-table tr:hover {
-    background-color: #f2f2f2;
-}
-
-.hotel-bookings-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.hotel-bookings-table th,
-.hotel-bookings-table td {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    text-align: left;
-}
-
-.hotel-bookings-table th {
-    background-color: #7e7e7e;
-    color: white;
-}
-
-.hotel-bookings-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.hotel-bookings-table tr:hover {
-    background-color: #f2f2f2;
-}
-
-    .flight-bookings-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.flight-bookings-table th,
-.flight-bookings-table td {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    text-align: left;
-}
-
-.flight-bookings-table th {
-    background-color: #7e7e7e;
-    color: white;
-}
-
-.flight-bookings-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.flight-bookings-table tr:hover {
-    background-color: #f2f2f2;
-}
-
-    .bookings-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.bookings-table th,
-.bookings-table td {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    text-align: left;
-}
-
-.bookings-table th {
-    background-color: #7e7e7e;
-    color: white;
-}
-
-.bookings-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.bookings-table tr:hover {
-    background-color: #f2f2f2;
-}
-
-    /* Style the tab */
-.tab {
-  overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
-}
-
-.new-payment-btn {
-    margin-top: 20px; /* Adjust margin as needed */
-    padding: 10px 20px;
-    background-color: #007bff; /* Adjust color as needed */
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.new-payment-btn:hover {
-    background-color: #0056b3; /* Adjust color as needed */
-}
-
-.payment-detail-item {
-    position: relative;
-    width: 100%; /* Ensure each item takes up full width of its grid cell */
-}
-
-.delete-card-btn {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-.delete-card-btn i {
-    color: red; /* Adjust color as needed */
-    font-size: 20px; /* Adjust size as needed */
-}
-/* Style the buttons inside the tab */
-.tab button {
-  background-color: inherit;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  transition: 0.3s;
-  font-size: 15px;
-}
-
-/* Change background color of buttons on hover */
-.tab button:hover {
-  background-color: #ddd;
-}
-
-/* Create an active/current tablink class */
-.tab button.active {
-  background-color: #ccc;
-}
-
-/* Style the tab content */
-.tabcontent {
-  display: none;
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  border-top: none;
-}
-
-   .profile-pic {
-    width: 100px; /* or any size you want */
-    height: 100px; /* must be the same as width to maintain aspect ratio */
-    border-radius: 50%; /* makes the image round */
-    object-fit: cover; /* ensures the image covers the space without distorting */
-}
-
-.no-image {
-    width: 100px;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%; /* also round */
-    background-color: #f0f0f0; /* a light gray background for the no image area */
-    color: #666; /* text color */
-    font-size: 14px;
-    border: 1px solid #ccc; /* optional: adds a subtle border */
-    position: relative; /* Needed to position the file input correctly */
-}
-
-.file-input {
-    opacity: 0; /* Makes the actual file input invisible */
-    width: 100px; /* Full width of the no-image div */
-    height: 100px; /* Full height of the no-image div */
-    position: absolute; /* Position it over the no-image div */
-    cursor: pointer; /* Cursor changes to pointer to indicate it's clickable */
-    border-radius: 50%; /* Maintains the round shape */
-}
-
-.file-input:hover + .no-image {
-    background-color: #e0e0e0; /* Optional: change background on hover */
-}
-
-    .required-mark {
-    color: red;  /* Makes the asterisk red */
-    font-weight: bold;  /* Optionally make it bold */
-}
     .profile-main{
-        /* background-image: url("/static/profile_bg.jpg"); */
-        /* max-height: 600px; */
+        background-image: url("/static/profile_bg.jpg");
+        max-height: 600px;
         overflow-y: auto;
     }
     .form-row {
@@ -637,13 +162,9 @@ table{
         list-style-type: none;
         padding: 0;
         margin: 0;
-        padding: 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
     }
     .payment-details-list li {
-        background-color: #2e358f;
+        background-color: #f7f7f7;
         border: 1px solid #ddd;
         margin-top: 10px;
         padding: 15px;
@@ -653,7 +174,9 @@ table{
         flex-direction: column;
         gap: 10px;
     }
-    
+    .payment-details-list li:first-child {
+        margin-top: 0;
+    }
     .payment-detail {
         font-size: 16px;
         color: #333;
@@ -664,9 +187,6 @@ table{
     .payment-details-header {
         text-align: center;
         margin-bottom: 20px;
-    }
-    .top-heading {
-        text-align: center;
     }
     .card-number {
         letter-spacing: 2px;
@@ -713,17 +233,9 @@ table{
         list-style-type: none;
         padding: 0;
     }
-    input[list="states"] {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box; /* Include padding and border in the width */
-}
-
     .payment-details-list li {
         margin-bottom: 10px;
-        background-color: #24285c;
+        background-color: #f2f2f2;
         padding: 10px;
         border-radius: 5px;
     }
@@ -771,6 +283,7 @@ table{
         margin-top: 20px;
     }
     .payment-details-list li {
+        background-color: #fff;
         margin-bottom: 10px;
         padding: 15px;
         border-radius: 5px;
@@ -782,12 +295,12 @@ table{
     }
     .payment-details-list li {
         margin-bottom: 10px;
+        background-color: #f2f2f2;
         padding: 10px;
         border-radius: 5px;
-        color: white;
     }
     .profile-container {
-        /* max-width: 800px; */
+        max-width: 800px;
         margin: auto;
         padding: 20px;
         border-radius: 8px;
@@ -860,93 +373,6 @@ table{
     flex-basis: calc(50% - 20px); /* Adjust based on form size */
 }
 
-.tab-container {
-    display: flex; /* Use flexbox to align tabs and content side by side */
-    width: 100%; /* Full width of the container */
-    height: 90%;
-}
-
-/* Style the tab section */
-.tab {
-    flex: 1; /* The tabs take up 1 part */
-    max-width: 150px; /* Maximum width of the tabs column */
-    height: 100%; /* Full height view */
-    border-right: 1px solid #ccc; /* Border to separate from content */
-    background-color: #f1f1f1; /* Background color for tabs */
-    font-size: 12px;
-}
-
-/* Style for each tab link */
-.tab button {
-    display: block; /* Stack the buttons vertically */
-    background-color: inherit; /* Inherits from the tab class */
-    color: black;
-    padding: 22px 16px;
-    width: 100%; /* Each button takes full width of the tab container */
-    border: none;
-    outline: none;
-    text-align: left; /* Align text to the left */
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-/* Hover effect for buttons */
-.tab button:hover {
-    background-color: #ddd; /* Light grey background on hover */
-}
-
-/* Active tab link styling */
-.tab button.active {
-    background-color: #ccc; /* Different background for active state */
-}
-
-/* Style for the content area */
-.tabcontent {
-    flex: 3; /* Content takes more space than tabs */
-    padding: 20px; /* Padding inside the content area */
-    overflow: auto; /* In case of overflow, show scrollbars */
-}
-.booking-history .booking-history-header {
-        text-align: center;
-        font-size: 28px;
-        color: #10011e;
-        margin-bottom: 30px;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
-        font-weight: 600;
-
-        
-    }
-        .booking-history .bookings-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px; /* Spacing between cards */
-            margin-top: 10px;
-
-        }
-        .booking-history .booking-card {
-
-            flex: 0 1 calc(33.333% - 20px);
-            background-color: #75a4822b;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgb(0 0 0 / 58%);
-        }
-        .booking-history .booking-card h3 {
-            margin-top: 0;
-        }
-        @media (max-width: 768px) {
-            .booking-history .booking-card {
-                flex: 0 1 calc(50% - 20px); /* Two cards per row on smaller screens */
-            }
-        }
-        @media (max-width: 480px) {
-            .booking-history .booking-card {
-                flex: 0 1 100%; /* Full width on very small screens */
-            }
-        }
-
-
 /* Adjustments for small screens */
 @media (max-width: 768px) {
     .form-row {
@@ -969,108 +395,16 @@ table{
     .payment-form .form-group {
         flex-basis: 100%; /* Full width on small screens */
     }
-    /* Container holding the tabs and tab content */
-/* Container for the entire tab interface */
-
-
 }
 
 </style>
 <script>
-    function openTab(evt, tabName) {
-  // Declare all variables
-  var i, tabcontent, tablinks;
-
-  // Get all elements with class="tabcontent" and hide them
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-
-  // Get all elements with class="tablinks" and remove the class "active"
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-
-  // Show the current tab, and add an "active" class to the button that opened the tab
-  document.getElementById(tabName).style.display = "block";
-  evt.currentTarget.className += " active";
-}
-
-// Optionally add this to auto-open the first tab on page load:
-document.addEventListener("DOMContentLoaded", function() {
-  document.getElementsByClassName("tablinks")[0].click();
-  
-});
-
-    
     document.addEventListener("DOMContentLoaded", function() {
         function clearPreviousErrors() {
             document.querySelectorAll('.error-message').forEach(function(message) {
                 message.remove();
             });
         }
-
-        const states = [
-        { abbr: "AL", name: "Alabama" },
-        { abbr: "AK", name: "Alaska" },
-        { abbr: "AZ", name: "Arizona" },
-        { abbr: "AR", name: "Arkansas" },
-        { abbr: "CA", name: "California" },
-        { abbr: "CO", name: "Colorado" },
-        { abbr: "CT", name: "Connecticut" },
-        { abbr: "DE", name: "Delaware" },
-        { abbr: "FL", name: "Florida" },
-        { abbr: "GA", name: "Georgia" },
-        { abbr: "HI", name: "Hawaii" },
-        { abbr: "ID", name: "Idaho" },
-        { abbr: "IL", name: "Illinois" },
-        { abbr: "IN", name: "Indiana" },
-        { abbr: "IA", name: "Iowa" },
-        { abbr: "KS", name: "Kansas" },
-        { abbr: "KY", name: "Kentucky" },
-        { abbr: "LA", name: "Louisiana" },
-        { abbr: "ME", name: "Maine" },
-        { abbr: "MD", name: "Maryland" },
-        { abbr: "MA", name: "Massachusetts" },
-        { abbr: "MI", name: "Michigan" },
-        { abbr: "MN", name: "Minnesota" },
-        { abbr: "MS", name: "Mississippi" },
-        { abbr: "MO", name: "Missouri" },
-        { abbr: "MT", name: "Montana" },
-        { abbr: "NE", name: "Nebraska" },
-        { abbr: "NV", name: "Nevada" },
-        { abbr: "NH", name: "New Hampshire" },
-        { abbr: "NJ", name: "New Jersey" },
-        { abbr: "NM", name: "New Mexico" },
-        { abbr: "NY", name: "New York" },
-        { abbr: "NC", name: "North Carolina" },
-        { abbr: "ND", name: "North Dakota" },
-        { abbr: "OH", name: "Ohio" },
-        { abbr: "OK", name: "Oklahoma" },
-        { abbr: "OR", name: "Oregon" },
-        { abbr: "PA", name: "Pennsylvania" },
-        { abbr: "RI", name: "Rhode Island" },
-        { abbr: "SC", name: "South Carolina" },
-        { abbr: "SD", name: "South Dakota" },
-        { abbr: "TN", name: "Tennessee" },
-        { abbr: "TX", name: "Texas" },
-        { abbr: "UT", name: "Utah" },
-        { abbr: "VT", name: "Vermont" },
-        { abbr: "VA", name: "Virginia" },
-        { abbr: "WA", name: "Washington" },
-        { abbr: "WV", name: "West Virginia" },
-        { abbr: "WI", name: "Wisconsin" },
-        { abbr: "WY", name: "Wyoming" }
-    ];
-    const selectElement = document.getElementById('state');
-    states.forEach(function(state) {
-        const option = document.createElement('option');
-        option.value = state.abbr;
-        option.textContent = state.name;
-        selectElement.appendChild(option);
-    });
     
         function showError(inputElement, message) {
             const error = document.createElement('div');
@@ -1087,9 +421,9 @@ document.addEventListener("DOMContentLoaded", function() {
             const firstName = document.getElementById('firstName');
             const lastName = document.getElementById('lastName');
             const email = document.getElementById('email');
-            // const flatDetails = document.getElementById('flatDetails');
-            // const state = document.getElementById('state');
-            // const country = document.getElementById('country');
+            const flatDetails = document.getElementById('flatDetails');
+            const state = document.getElementById('state');
+            const country = document.getElementById('country');
             const phno = document.getElementById('phno');
             const phnoRegex = /^\+?1?\d{9,15}$/;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1106,33 +440,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 showError(email, 'Please enter a valid  email address');
                 isValid = false;
             }
-            // if (!flatDetails.value.trim()) {
-            //     showError(flatDetails, 'Flat details are required.');
-            //     isValid = false;
-            // }
-            // if (!state.value.trim()) {
-            //     showError(state, 'State is required.');
-            //     isValid = false;
-            // }
-            // if (!country.value.trim()) {
-            //     showError(country, 'Country is required.');
-            //     isValid = false;
-            // }
-            if (!phno.value.match(phnoRegex)) {
-                showError(phno, 'Please enter a valid phone number.');
-                isValid = false;
-            }
-    
-            return isValid;
-        }
-    
-
-        function validateAddressForm() {
-            clearPreviousErrors();
-            let isValid = true;
-            const flatDetails = document.getElementById('flatDetails');
-            const state = document.getElementById('state');
-            const country = document.getElementById('country');
             if (!flatDetails.value.trim()) {
                 showError(flatDetails, 'Flat details are required.');
                 isValid = false;
@@ -1141,10 +448,15 @@ document.addEventListener("DOMContentLoaded", function() {
                 showError(state, 'State is required.');
                 isValid = false;
             }
-            // if (!country.value.trim()) {
-            //     showError(country, 'Country is required.');
-            //     isValid = false;
-            // }
+            if (!country.value.trim()) {
+                showError(country, 'Country is required.');
+                isValid = false;
+            }
+            if (!phno.value.match(phnoRegex)) {
+                showError(phno, 'Please enter a valid phone number.');
+                isValid = false;
+            }
+    
             return isValid;
         }
     
@@ -1176,6 +488,11 @@ document.addEventListener("DOMContentLoaded", function() {
         formData.append('firstName', document.getElementById('firstName').value);
         formData.append('lastName', document.getElementById('lastName').value);
         formData.append('email', document.getElementById('email').value);
+        formData.append('flatDetails', document.getElementById('flatDetails').value);
+        formData.append('line1', document.getElementById('line1').value);
+        formData.append('line2', document.getElementById('line2').value);
+        formData.append('state', document.getElementById('state').value);
+        formData.append('country', document.getElementById('country').value);
         formData.append('countryCode', document.getElementById('countryCode').value);
         formData.append('phno', document.getElementById('phno').value);
         formData.append('type',document.getElementById('form-type').value);
@@ -1208,40 +525,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
         });
 
-        document.getElementById('updateAddressBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-        console.log("update address button")
-        if (validateAddressForm()) {
-            
-            var formData = new FormData();
-            formData.append('flatDetails', document.getElementById('flatDetails').value);
-            formData.append('line1', document.getElementById('line1').value);
-            formData.append('line2', document.getElementById('line2').value);
-            formData.append('state', document.getElementById('state').value);
-            formData.append('country', "");
-            formData.append('type', 'AddressForm');
-            fetch('/profile/', { 
-                method: 'POST',
-                body: formData,
-        
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                if (!data.success){
-                    alert(data.error);
-                }
-                if (data.redirect_url){
-                window.location.href = data.redirect_url;}
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while updating the profile.');
-            });
-    
-        }
-        });
-
     
         document.getElementById('addPaymentBtn').addEventListener('click', function(e) {
             e.preventDefault();
@@ -1268,9 +551,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     alert(data.error);
                 }
                 if (data.redirect_url){
-                    document.getElementById("paymentdetails_tab_button").click();
-                    // window.location.href = data.redirect_url;
-            }
+                window.location.href = data.redirect_url;}
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -1279,17 +560,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
         }
         });
-    });
-
-    document.getElementById('ReviewFormSubmit').addEventListener('click', function(event) {
-        console.log("Inside submit review")
-        event.preventDefault(); // Prevent the default form submission
-
-        // Get the payment details
-        var cardNumber = document.getElementById('Rating').value;
-        var cardHolderName = document.getElementById('Comments').value;
-        $('#ReviewModal').modal('hide');
-
     });
     </script>
     

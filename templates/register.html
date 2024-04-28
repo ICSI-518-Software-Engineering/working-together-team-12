@@ -1,64 +1,209 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}
-<title>MOVIES | Home</title>
-{% endblock %}
-
-{% block style %}
-<link rel="stylesheet" href="{% static 'css/login.css' %}">
-
-{% endblock %}
+{% extends 'user_base.html' %}
 
 {% block content %}
-
-
-
-<div class="container-fluid">
-    <div class="row justify-content-end">
-        <div class="col-lg-5 col-12">
-            <form action="register" method="POST" class="text-white register">
-                {% csrf_token %}
-
-                    <h1>Registration</h1>
-
-                <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input class="form-control" type="text" placeholder="username" name="username">
-                </div>
-                <div class="form-row">
-                <div class="form-group col-md-6 col-12">
-                    <label class="form-label "> First Name</label>
-                    <input class="form-control" type="text" placeholder="firstname" name="firstname">
-                </div>
-                <div class="form-group col-md-6 col-12">
-                    <label class="form-label ">Last Name</label>
-                    <input class="form-control" type="text" placeholder="lastname" name="lastname">
-                </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label"><i class="fa fa-envelope-o" aria-hidden="true"></i> E-mail</label>
-                    <input class="form-control" type="email" placeholder="@" name="email">
-                </div>
-                <div class="form-row">
-                <div class="form-group col-md-6 col-12">
-                    <label class="form-label ">Password</label>
-                    <input class="form-control" type="password" placeholder="pass" name="password1">
-                </div>
-                <div class="form-group col-md-6 col-12">
-                    <label class="form-label ">Repeat Password</label>
-                    <input class="form-control" type="password" placeholder="pass" name="password2">
-                </div>
-                </div>
-                <input class="btn btn-primary btn-lg btn-block" type="submit" value="Register">
-                <!-- <a href="/accounts/register_cinema" class="btn btn-primary btn-block" style="width: 100%">Register as Cinema</a> -->
-            </form>
+<div class="container form-signin">
+    <h2 class="form-heading">Register</h2>
+    <form method="post" class="login-form">
+        <!-- {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-lg btn-primary btn-block animated-button">Register</button> -->
+        <div class="form-group">
+            <label for="id_username">Username:</label>
+            <input type="text" id="id_username" name="username" required>
         </div>
-    </div>
+        
+        <div class="form-group">
+            <label for="id_email">Email:</label>
+            <input type="email" id="id_email" name="email" required>
+        </div>
+        
+        
+        <div class="form-group">
+            <label for="id_password1">Password:</label>
+            <input type="password" id="id_password1" name="password1" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="id_password2">Confirm Password:</label>
+            <input type="password" id="id_password2" name="password2" required>
+        </div>
+        
+        <button type="button" id="submit_btn" class="btn btn-lg btn-primary btn-block animated-button">Register</button>
+    </form>
+    <a href="{% url 'login' %}" class="signup-link">Already have an account? Log in</a>
 </div>
+<style>
+    body {
+        padding-top: 20px;
+        background: url("/static/profile_bg.jpg");
+        font-family: 'Poppins', sans-serif;
+    }
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        
+    }
+    .form-signin {
+        background: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(8.5px);
+        border-radius: 15px;    
+        width: 100%;
+        max-width: 380px;
+        padding: 25px; 
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        animation: slide-in 0.5s ease-out forwards;
+    }
+    .form-heading {
+        margin-bottom: 30px; 
+        color: #000;
+        text-align: center;
+    }
+    form {
+        width: 100%;
+    }
+    form p {
+        margin-bottom: 5px;
+        padding: 0px;
+    }
+    input, textarea, select {
+        width: calc(100% - 20px); /* Full width */
+        margin: 5px;
+        padding: 0px; 
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        background-color: rgba(255,255,255,0.07);
+        height: 40px; 
+    }
+    .animated-button {
+        margin-top: 20px;
+        width: 100%;
+        background-color: #007bff;
+        color: white;
+        transition: all 0.3s;
+        border-radius: 25px;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 123, 255, 0.4);
+    }
+    .animated-button:hover, .animated-button:focus {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.5);
+    }
+    .signup-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px; 
+        color: #080808;
+        transition: color 0.3s;
+    }
+    .signup-link:hover {
+        color: #ca0808;
+    }
+    @keyframes slide-in {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+<script>
+     document.addEventListener("DOMContentLoaded", function() {
+    function clearPreviousErrors() {
+            document.querySelectorAll('.error-message').forEach(function(message) {
+                message.remove();
+            });
+        }
+    
+        function showError(inputElement, message) {
+            const error = document.createElement('div');
+            error.textContent = message;
+            error.className = 'error-message';
+            error.style.color = 'red';
+            error.style.fontSize = '0.8em';
+            inputElement.parentNode.insertBefore(error, inputElement.nextSibling);
+        }
+    function validateRegistrationForm() {
+    clearPreviousErrors(); 
+    let isValid = true;
 
-{% for message in messages %}
-<h4> {{message}} </h4>
-{% endfor %}
+    const username = document.getElementById('id_username');
+    if (username.value.length < 5) {
+        showError(username, 'Username must be more than 5 characters.');
+        isValid = false;
+    }
 
+    const email = document.getElementById('id_email');
+    if (!email.value.includes('@') || email.value.length < 5) {
+        showError(email, 'Email must be valid and more than 5 characters.');
+        isValid = false;
+    }
+
+    const password = document.getElementById('id_password1');
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
+    if (!passwordRegex.test(password.value)) {
+        showError(password, 'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one symbol.');
+        isValid = false;
+    }
+
+    const confirmPassword = document.getElementById('id_password2');
+    if (password.value !== confirmPassword.value) {
+        showError(confirmPassword, 'Passwords do not match.');
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+document.getElementById('submit_btn').addEventListener('click', function(event) {
+    event.preventDefault(); 
+    console.log('click');
+    if (validateRegistrationForm()) {
+        var formData = new FormData();
+        
+        formData.append('username', document.getElementById('id_username').value);
+        formData.append('email', document.getElementById('id_email').value);
+        formData.append('password1', document.getElementById('id_password1').value);
+        formData.append('password2', document.getElementById('id_password2').value);
+        fetch('/register/', { 
+                method: 'POST',
+                body: formData,
+        
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (!data.success){
+                    // alert(data.errors);
+                    // console.log(data.errors)
+                    var username= document.getElementById('id_username');
+                    var email= document.getElementById('id_email');
+                    if (data.errors =='Username already taken.'){
+                        showError(username,data.errors)
+                    }
+                    else{
+                        showError(email,data.errors)
+                    }
+                }
+                if (data.redirect_url){
+                window.location.href = data.redirect_url;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the profile.');
+            });
+    
+    }
+
+});
+
+     });</script>
 {% endblock %}

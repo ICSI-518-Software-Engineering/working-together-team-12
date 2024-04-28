@@ -53,8 +53,8 @@ MIDDLEWARE = [
 ]
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'onestopbooking12@gmail.com' 
-EMAIL_HOST_PASSWORD = 'farc zolo xcem hori' 
+EMAIL_HOST_USER = 'smurfmail2224@gmail.com' 
+EMAIL_HOST_PASSWORD = 'smke vtmf fies ygco' 
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 

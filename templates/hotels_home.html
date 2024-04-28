@@ -6,27 +6,7 @@
 
 {% block content %}
 
-<div style="height: 30%; margin: 0;
-position: relative;
-display: flex;
-color: white;
-background-image: url(/static/Hotels_c.jpg);
-background-position: top;
-width: 100%;
-background-size: cover;">
-<div style="
-    background: linear-gradient(to right, #000000, #ffffff30);
-    width: 100%;
-    align-content:center">
-    <h1 style=" 
-        align-items: center;
-        display: flex;">Hotel Search</h1>
-    <h5> Location :{{city_name}}</h5>
-</div>
-</div>
 <div class="hotel_home" style="color: #f8f9fa;">
-
-
     <div class="centered-container">
         <form class="form-inline position-relative">
             <input class="form-control mr-sm-2" id ='city-search'; type="search" placeholder="change location" aria-label="Search" name="query">
@@ -35,6 +15,7 @@ background-size: cover;">
         </form>
     </div>
     <div class="py-5" style="margin-left:10px;">
+        <h1 class="mb-4">Hotels near {{city_name}}</h1>
         <div class="row">
             {% for hotel in hotels %}
                 <div class="col-lg-3 col-md-6 mb-4">
@@ -65,8 +46,10 @@ background-size: cover;">
     margin-bottom: 5px;
     }
 .hotel_home{
+    background-image: url("/static/Hotels_c.jpg");
         position: relative; 
-
+        height: 100vh; 
+        width: 100%; 
         background-size: cover; 
         background-position: center; 
         background-repeat: no-repeat; 

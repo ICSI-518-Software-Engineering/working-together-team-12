@@ -2,22 +2,6 @@
 
 {% block content %}
 <div id="movie_home">
-    <div style="height: 40%; margin: 0;
-        position: relative;
-        display: flex;
-        color: white;
-        background-image: url(/static/Movies_c.png);
-        background-position: center;
-        width: 100%;">
-        <div style="
-            background: linear-gradient(to right, #000000, #ffffff30);
-            width: 100%;
-            align-content:center">
-            <h1 style=" 
-                align-items: center;
-                display: flex;">Movies in {{city_name}}</h1>
-        </div>
-    </div>
     <div class="centered-container">
         <form class="form-inline position-relative">
             <input class="form-control mr-sm-2" id ='city-search'; type="search" placeholder="change location" aria-label="Search" name="query">
@@ -25,24 +9,23 @@
             <button id='submit-btn' class="btn btn-outline-success my-2 my-sm-0" type="submit" style="background-color: rgb(231, 235, 231);">Search</button>
         </form>
     </div>
-    
     <div class="container">
-        
+        <h1 style="color: rgb(70, 66, 66);">Movies Playing in {{city_name}}</h1>
         <div class="row">
             {% for emsVersionId, movie in movies_dict.items %}
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="card h-100">
-                    <a href="{% url 'movie_detail' emsVersionId=emsVersionId %}">
-                        {% if movie.image_url %}
-                            <div class="card-img-overlay">
-                                <h5 class="card-title">{{ movie.name }}</h5>
-                                <p>Tomato Rating: {{movie.rating}}</p>
-                            </div>
-                            <img src="{{ movie.image_url }}" class="card-img" alt="{{ movie.name }}">
-                        {% endif %}
-                    </a>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100">
+                        <a href="{% url 'movie_detail' emsVersionId=emsVersionId %}"> 
+                            {% if movie.image_url %}
+                                <img src="{{ movie.image_url }}" class="card-img-top" alt="{{ movie.name }}">
+                            {% endif %}
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ movie.name }}</h5>
+                            <p>Tomato Rating: {{movie.rating}}</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
             {% endfor %}
         </div>
     </div>
@@ -50,9 +33,10 @@
 
 <style>
       #movie_home {
-        /* background-image: url("/static/Movies_c.png"); */
+        padding: 20px;
+        background-image: url("/static/Movies_c.png");
         position: relative; 
-        height: 90vh; 
+        height: 100vh; 
         width: 100%; 
         background-size: cover; 
         background-position: center; 
@@ -78,7 +62,7 @@
     display: flex;
     justify-content: center;
     margin-top: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     }
 #city-results {
     position: absolute;
@@ -100,25 +84,6 @@
 .list-group li:hover {
     background-color: #f8f9fa; /* Slightly different background on hover */
 }
-
-.card-img-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Adjust background color and opacity as needed */
-    color: #fff; /* Text color */
-    padding: 20px; /* Adjust padding as needed */
-    box-sizing: border-box;
-    align-content: end;
-}
-
-.card-title,
-.card-text {
-    margin-bottom: 0; /* Reset margin to remove extra spacing */
-}
-
 </style>
 <script>
     document.getElementById('city-search').addEventListener('input', function() {

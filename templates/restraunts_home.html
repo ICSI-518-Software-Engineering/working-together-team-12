@@ -4,24 +4,6 @@
 
 {% block content %}
 <div id="restraunt_home">
-    <div style="height: 40%; margin: 0;
-    position: relative;
-    display: flex;
-    color: white;
-    background-image: url(/static/Restaurants_c.jpg);
-    background-position: center;
-    width: 100%;
-    background-size: cover;">
-    <div style="
-        background: linear-gradient(to right, #000000, #ffffff30);
-        width: 100%;
-        align-content:center">
-        <h1 style=" 
-            align-items: center;
-            display: flex;">Restraunt Search</h1>
-        <h5>Location: {{city_name}}</h5>
-    </div>
-</div>
     <div class="centered-container">
         <form class="form-inline position-relative">
             <input class="form-control mr-sm-2" id ='city-search'; type="search" placeholder="change location" aria-label="Search" name="query">
@@ -30,6 +12,7 @@
         </form>
     </div>
     <div class="py-3" style="margin-left:10px;">
+        <h1 class="mb-4" style="color: white;">Restraunts near {{city_name}}</h1>
         <div class="row">
             {% for restraunt in restraunts %}
                 <div class="col-lg-3 col-md-6 mb-4">
@@ -59,6 +42,7 @@
     margin-bottom: 5px;
     }
     #restraunt_home{
+    background-image: url("/static/Restaurants_c.jpg");
         position: relative; 
         height: 100vh; 
         width: 100%; 
