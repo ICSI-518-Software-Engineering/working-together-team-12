@@ -446,7 +446,7 @@ def movies_home(request):
     theaters_query = {"latitude":data['latitude'],"longitude":data['longitude'], "radius": "50"}
     print('theaters_query',theaters_query)
     theaters_headers = {
-        'X-RapidAPI-Key': 'ee92e90528msh5c7ce596da5ee43p16c4fajsn512eea1cd54d',  
+        'X-RapidAPI-Key': 'da1984d06cmsh9711b9a7130e210p1b2982jsn00e5c7f734da',  
         "X-RapidAPI-Host": "flixster.p.rapidapi.com"
     }
     theaters_response = requests.get(theaters_url, headers=theaters_headers, params=theaters_query)
@@ -514,7 +514,7 @@ def movie_detail(request, emsVersionId):
     querystring = {"emsVersionId": emsVersionId}
 
     headers = {
-        'X-RapidAPI-Key': '574f37c05cmsh2da5a8f03a076f5p175efajsn5cb41d217d2d',
+        'X-RapidAPI-Key': 'da1984d06cmsh9711b9a7130e210p1b2982jsn00e5c7f734da',
         'X-RapidAPI-Host': 'flixster.p.rapidapi.com'
     }
     response = requests.get(url, headers=headers, params=querystring)
@@ -613,7 +613,7 @@ def hotel_list(request):
         "region": "us"
     }
     headers = {
-        "X-RapidAPI-Key": "33e8359c95msh38118f7419b9316p19de69jsn2346b99fee05",
+        "X-RapidAPI-Key": "da1984d06cmsh9711b9a7130e210p1b2982jsn00e5c7f734da",
         'X-RapidAPI-Host': 'local-business-data.p.rapidapi.com'
     }
 
@@ -755,7 +755,7 @@ def restraunt_list(request):
     }
     print(querystring)
     headers = {
-        'X-RapidAPI-Key': '51bd1a8182mshb0368de1c262399p1696b1jsn14a9c924799c',
+        'X-RapidAPI-Key': 'da1984d06cmsh9711b9a7130e210p1b2982jsn00e5c7f734da',
         'X-RapidAPI-Host': 'local-business-data.p.rapidapi.com'
     }
 
@@ -865,7 +865,7 @@ def search_flights(request):
         print("origin is", origin)
         print("destination is", destination)
         headers = {
-            "X-RapidAPI-Key": "7dbc098597msh8dfc40d52e8a0fcp173ffejsneb6d1efbdb5d",
+            "X-RapidAPI-Key": "da1984d06cmsh9711b9a7130e210p1b2982jsn00e5c7f734da",
             "X-RapidAPI-Host": "priceline-com-provider.p.rapidapi.com"
         }
         origin_response = requests.get(
@@ -986,7 +986,7 @@ def add_passengers(request):
 
 def flight_results(request, origin_id, destination_id, date, sort_order,class_type):
     headers = {
-        "X-RapidAPI-Key": "7dbc098597msh8dfc40d52e8a0fcp173ffejsneb6d1efbdb5d",
+        "X-RapidAPI-Key": "da1984d06cmsh9711b9a7130e210p1b2982jsn00e5c7f734da",
         "X-RapidAPI-Host": "priceline-com-provider.p.rapidapi.com"
     }
     querystring = {
