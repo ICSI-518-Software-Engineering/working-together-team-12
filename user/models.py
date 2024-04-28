@@ -88,7 +88,7 @@ class FlightBooking(models.Model):
     duration = models.IntegerField(help_text="Duration in minutes")
     price = models.FloatField()
     payment_card_ending = models.CharField(max_length=4)
-    thank_you_note = models.TextField(default="Thank you for your booking. Enjoy the show!")
+    thank_you_note = models.TextField(default="Thank you for your booking!")
 
     def __str__(self):
         return f"Booking ID {self.booking_id} at {self.arrival_airport}"

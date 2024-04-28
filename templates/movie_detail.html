@@ -2,6 +2,7 @@
 {% load i18n %}
 {% block extra_css %}
 <style>
+    /* Your CSS styles */
     .showtime {
         display: inline-block;
         margin: 8px; /* Increase margin for better spacing */
@@ -44,35 +45,68 @@
         font-size: 18px; /* Adjust font size here */
         margin-bottom: 10px; /* Space between movie info */
     }
+    .scrollable-div {
+        overflow: auto; /* Enable scrolling */
+        scrollbar-width: none; /* For Firefox */
+        -ms-overflow-style: none; /* For Internet Explorer and Edge */
+    }
+
+    .scrollable-div::-webkit-scrollbar {
+        display: none; /* For Chrome, Safari, and Opera */
+    }
+
+    #movie_container {
+        position: relative; 
+        height: 90vh; 
+        width: 100%; 
+        background-size: cover; 
+        background-position: center; 
+        background-repeat: no-repeat; 
+        background-attachment: fixed; 
+        overflow-y: auto; 
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <div id="movie_container">
-    <div style="height: 20%; margin: 0;
-    position: relative;
-    display: flex;
-    color: white;
-    background-image: url(/static/Movies_c.png);
-    background-position: center;
-    width: 100%;">
-    <div style="
-    background: linear-gradient(to right, #000000, #ffffff30);
-    width: 100%;
-    align-content:center">
-        <h1 style=" 
-        align-items: center;
-        display: flex;">Showtimes - {{movie.name}}</h1>
-        <h5>Rating - {{ movie.rating }}%</h5>
+    <!-- Your content -->
+    <!-- Header section -->
+    <div style="height: 20%; margin: 0; position: relative; display: flex; color: white; background-image: url(/static/Movies_c.png); background-position: center; width: 100%;">
+        <div style="background: linear-gradient(to right, #000000, #ffffff30); width: 100%; align-content:center">
+            <h1 style="align-items: center; display: flex;">Showtimes - {{ movie.name }}</h1>
+            <h5>Rating - {{ movie.rating }}%</h5>
+        </div>
     </div>
-    </div>
+    <!-- Movie details and showtimes -->
     <div class="row" style="width: 100%;height: 80%;">
         <div class="col-md-6 scrollable-div" style="height: 100%; overflow: scroll;">
             <div class="movie-details">
-                <img src="{{ movie.image_url }}" alt="Movie Poster" class="movie-poster" style="width: 50%;">
-                <div class="movie-info"><strong>Synopsis:</strong> {{ movie.synopsis }}</div>
-                <div class="movie-info"><strong>Genres:</strong> {{ movie.genres|join:", " }}</div>
+                <img src="{{ movie.image_url }}" alt="Movie Poster" class="movie-poster" style="width: 50%; padding-bottom: 2rem;">
+                <div class="movie-info"><strong>Title:</strong> {{ movie_data.title }}</div>
+                <div class="movie-info"><strong>Directed By:</strong> {{ movie_data.directed_by }}</div>
+                <div class="movie-info"><strong>Release Date:</strong> {{ movie_data.release_date }}</div>
+                <div class="movie-info"><strong>Duration:</strong> {{ movie_data.duration_minutes }} minutes</div>
+                <div class="movie-info"><strong>Genres:</strong> {{ movie_data.genres|join:", " }}</div>
+                <div class="movie-info"><strong>Tomatometer Rating:</strong> {{ movie_data.tomatometer_rating }}</div>
+                <div class="movie-info"><strong>Synopsis:</strong> {{ movie_data.synopsis }}</div>
+                <!-- <div class="movie-info"><strong>Total Gross:</strong> {{ movie_data.total_gross }}</div> -->
+                <div class="movie-info"><strong>Cast:</strong> </div>
+                <div class="row">
+                    {% for actor in movie_data.cast %}
+                        <div class="col-md-3" style="margin-bottom: 20px;">
+                            <div style="border: 1px solid #dee2e6; border-radius: 8px; background-color: #f8f9fa;">
+                                <img src="{{ actor.headShotImage.url }}" alt="{{ actor.name }}" onerror="this.onerror=null; this.src='https\:\/\/via.placeholder.com/150';" style="width: 100%; border-top-left-radius: 8px; border-top-right-radius: 8px;">
+                                <div style="padding: 20px;">
+                                    <p style="margin-top: 0; font-size: large; font-weight: 500;">{{ actor.name }}</p>
+                                    <p style="color: rgb(121, 121, 121);">{{ actor.characterName|default:"" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
+            
         </div>
 
         <div class="col-md-6">
@@ -89,27 +123,4 @@
         </div>
     </div>
 </div>
-<style>
-    .scrollable-div {
-    overflow: auto; /* Enable scrolling */
-    scrollbar-width: none; /* For Firefox */
-    -ms-overflow-style: none; /* For Internet Explorer and Edge */
-}
-
-.scrollable-div::-webkit-scrollbar {
-    display: none; /* For Chrome, Safari, and Opera */
-}
-
-    #movie_container{
-        position: relative; 
-        height: 90vh; 
-        width: 100%; 
-        background-size: cover; 
-        background-position: center; 
-        background-repeat: no-repeat; 
-        background-attachment: fixed; 
-        overflow-y: auto; 
-    }
-
-</style>
 {% endblock %}

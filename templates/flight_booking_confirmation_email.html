@@ -44,14 +44,14 @@
             <p><strong>Price:</strong><span id = "price">{{ totalprice }}</span></p>
 
             <p><strong>Paid using the card ending with:</strong> {{ card_ending }}</p>
-            <p>Thank you for your booking. Enjoy the show!</p>
+            <p>Thank you for your booking!</p>
 
             {%for passenger in passengers%}
                 <p><strong>Passenger Details:</strong> </p>
                 <p><strong>First Name:</strong> {{ passenger.first_name}}</p>
                 <p><strong>Laste Name:</strong> {{ passenger.last_name}}</p>
                 <p><strong>Age:</strong> {{ passenger.age}}</p>
-                <p><strong>DL Number:</strong> {{ passenger.dl_number}}</p>
+                <p><strong>Passport Number Number:</strong> {{ passenger.dl_number}}</p>
                 <p> ------ </p>
             {%endfor%}
         </div>

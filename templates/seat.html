@@ -75,7 +75,7 @@ MOVIES | Seats
               <label for="seatA1"></label>
             </div>
             Selected :<div class="seat" id="A2">
-              <input type="checkbox" value="X2" id="seatA2" name="check" checked disbled/>
+              <input type="checkbox" value="X2" id="seatA2" name="check" checked disabled/>
               <label for="seatA2"></label>
             </div>
             Not Available :<div class="seat notvacant" id="A3">
@@ -1239,6 +1239,9 @@ MOVIES | Seats
             // Check all checkboxes and add the value of checked ones to selectedSeats
             seatCheckboxes.forEach(function(box) {
                 if (box.checked) {
+                  if (box.disabled)
+                  {}
+                  else
                     selectedSeats.push(box.value);
                 }
             });
@@ -1247,17 +1250,7 @@ MOVIES | Seats
         });
     });
 });
-  // $(document).ready(function() {
-  //       $(".seat input[type='checkbox']").change(function () {
-  //           var selectedSeats = [];
-  //           console.log('getting clicled');
-  //           $(".seat input[type='checkbox']:checked").each(function () {
-  //               selectedSeats.push($(this).val());
-  //           });
-  //           $("#slots").text(selectedSeats.join(", "));
-  //       });
-  //   });
-  // 
+
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {

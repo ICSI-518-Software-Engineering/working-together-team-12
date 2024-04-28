@@ -21,7 +21,7 @@ from .models import UserProfile,PaymentDetail,CitySelection
 from django.contrib import messages
 import requests
 from django.urls import reverse
-from datetime import datetime 
+import datetime 
 from .models import MovieTickets, OTPStorage
 import json
 from .models import FlightBooking, Passenger
@@ -143,7 +143,8 @@ def reset_password(request):
                 #compare with old password
                 user = authenticate(request, email=email, password=password)
                 if (password == confirm_password) and (not user):
-                    user = User.objects.get(email=email)
+                    user = User.objects.get(email=email )
+                    print("changing password to", password)
                     user.set_password(password)
                     user.save()
                     return redirect(user_login)
@@ -414,6 +415,13 @@ def movies_home(request):
                         'latitude': str(matching_city.lat),
                         'longitude': str(matching_city.lng)
                     }
+        else: 
+            data = {
+                'city_name': 'Albany',
+                'state_name': 'New York',
+                'latitude': '42.6664"',
+                'longitude': '-73.7987'
+            }  
     else:
          data = {
                         'city_name': 'Albany',
@@ -492,11 +500,11 @@ def movie_detail(request, emsVersionId):
     movies_dict = request.session.get('movies_dict', {})
     url = "https://flixster.p.rapidapi.com/movies/detail"
 
-    querystring = {"emsVersionId":emsVersionId}
+    querystring = {"emsVersionId": emsVersionId}
 
     headers = {
-        'X-RapidAPI-Key': '7dbc098597msh8dfc40d52e8a0fcp173ffejsneb6d1efbdb5d',
-        "X-RapidAPI-Host": "flixster.p.rapidapi.com"
+        'X-RapidAPI-Key': '574f37c05cmsh2da5a8f03a076f5p175efajsn5cb41d217d2d',
+        'X-RapidAPI-Host': 'flixster.p.rapidapi.com'
     }
     response = requests.get(url, headers=headers, params=querystring)
     mvin = response.json().get('data', {}).get('movie', {})
@@ -509,12 +517,32 @@ def movie_detail(request, emsVersionId):
     tomato_rating_dict = mvin.get('tomatoRating', {})
     tomatometer_rating = tomato_rating_dict.get('tomatometer', 'No rating available') if tomato_rating_dict else 'No rating available'
 
+    # Extract additional movie information
+    synopsis = mvin.get('synopsis', 'No description available')
+    cast = mvin.get('cast', [])
+    directed_by = mvin.get('directedBy', 'Director information not available')
+    duration_minutes = mvin.get('durationMinutes', 'Duration information not available')
+    release_date = mvin.get('releaseDate', 'Release date not available')
+    availability_window = mvin.get('availabilityWindow', 'Availability window not available')
+    total_gross = mvin.get('totalGross', 'Total gross not available')
+
+    # Extract basic movie information
     movie_data = {
-        "synopsis": mvin.get('synopsis', 'No synopsis available'),
-        "poster_image": poster_image_url,
-        "genres": genre_names,
-        "rating": tomatometer_rating
+        'title': mvin.get('name', 'No title available'),
+        'release_date': release_date,
+        'genres': genre_names,
+        'poster_image_url': poster_image_url,
+        'tomatometer_rating': tomatometer_rating,
+        'synopsis': synopsis,
+        'cast': cast,
+        'directed_by': directed_by,
+        'duration_minutes': duration_minutes,
+        'availability_window': availability_window,
+        'total_gross': total_gross
     }
+
+    # Store the movie data in the movies_dict object
+    movies_dict['movie_id'] = movie_data
 
 
     movie = movies_dict.get(emsVersionId)
@@ -534,6 +562,7 @@ def showtime_detail(request, emsVersionId, theaterId, showtime):
 def hotel_list(request):
     latest_selection = CitySelection.objects.filter(user=request.user).order_by('-created').first()
     print('latest_selection in hotels',latest_selection)
+    data={}
     if latest_selection is not None:
         parts = latest_selection.city_name.split(',')
         if len(parts) >= 2:
@@ -547,6 +576,13 @@ def hotel_list(request):
                         'latitude': str(matching_city.lat),
                         'longitude': str(matching_city.lng)
                     }
+        else:
+            data = {
+                        'city_name': 'Albany',
+                        'state_name': 'New York',
+                        'latitude': '42.6850',
+                        'longitude': '73.8248'
+                    } 
     else:
          data = {
                         'city_name': 'Albany',
@@ -566,8 +602,8 @@ def hotel_list(request):
         "region": "us"
     }
     headers = {
-        "X-RapidAPI-Key": "0070678bbdmshf0aa4cab0ff34cfp1ed9b2jsn39237d8c7eb3",
-        "X-RapidAPI-Host": "local-business-data.p.rapidapi.com"
+        'X-RapidAPI-Key': '574f37c05cmsh2da5a8f03a076f5p175efajsn5cb41d217d2d',
+        'X-RapidAPI-Host': 'local-business-data.p.rapidapi.com'
     }
 
     response = requests.get(url, headers=headers, params=querystring)
@@ -673,6 +709,13 @@ def restraunt_list(request):
                         'latitude': str(matching_city.lat),
                         'longitude': str(matching_city.lng)
                     }
+        else: 
+            data = {
+                'city_name': 'Albany',
+                'state_name': 'New York',
+                'latitude': '42.6850',
+                'longitude': '73.8248'
+            } 
     else:
          data = {
                         'city_name': 'Albany',
@@ -693,8 +736,8 @@ def restraunt_list(request):
     }
     print(querystring)
     headers = {
-        "X-RapidAPI-Key": "0070678bbdmshf0aa4cab0ff34cfp1ed9b2jsn39237d8c7eb3",
-        "X-RapidAPI-Host": "local-business-data.p.rapidapi.com"
+        'X-RapidAPI-Key': '574f37c05cmsh2da5a8f03a076f5p175efajsn5cb41d217d2d',
+        'X-RapidAPI-Host': 'local-business-data.p.rapidapi.com'
     }
 
     response = requests.get(url, headers=headers, params=querystring)
@@ -792,7 +835,8 @@ def search_flights(request):
         departure_date = request.POST.get('departure_date')
         sort_order = request.POST.get('sort_order')
         class_type = request.POST.get('class_type')
-    
+        print("origin is", origin)
+        print("destination is", destination)
         headers = {
             "X-RapidAPI-Key": "7dbc098597msh8dfc40d52e8a0fcp173ffejsneb6d1efbdb5d",
             "X-RapidAPI-Host": "priceline-com-provider.p.rapidapi.com"
@@ -880,7 +924,7 @@ def add_passengers(request):
             booking_id=booking_id,  # Booking ID generated from current time
             payment_card_ending=request.POST.get('payment_method'),  # Assuming you want the last 4 digits only
             price=float(request.POST.get('totalprice')),  # Convert price to float
-            thank_you_note="Thank you for your booking. Enjoy the show!"
+            thank_you_note="Thank you for your booking!"
         )
         booking.save()
 
@@ -1003,7 +1047,7 @@ def save_selection(request):
         city_name = request.POST.get('city_name')
         print('city_name form save_selection',city_name)
         
-        visit_date = datetime.strptime(request.POST.get('visit_date'), '%Y-%m-%d').date()
+        visit_date = datetime.datetime.strptime(request.POST.get('visit_date'), '%Y-%m-%d').date()
         # print(city_name,visit_date)
         CitySelection.objects.create(user=request.user,city_name=city_name, visit_date=visit_date)
         redirect_url = reverse('movies_home') 
