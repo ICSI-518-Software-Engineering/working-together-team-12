@@ -520,7 +520,21 @@ def flight_results(request, origin_id, destination_id, date, sort_order,class_ty
 
 
 
-
+def payment_portal(request, booking_id):
+    ticket = get_object_or_404(MovieTickets, pk=booking_id)
+    number_of_tickets = len(ticket.tickets.split(',')) 
+    total_price = number_of_tickets * 10
+    
+    payment_options = PaymentDetail.objects.filter(user_profile__user=request.user)
+    
+    context = {
+        'ticket': ticket,
+        'number_of_tickets': number_of_tickets,
+        'total_price': total_price,
+        'payment_options': payment_options,
+    }
+    
+    return render(request, 'payment_portal.html', context)
 
 
 
