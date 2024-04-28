@@ -3,17 +3,32 @@
 {% block title %}{{ hotel.name }} Details{% endblock %}
 
 {% block content %}
+
 <div id="hotel_detail">
-   
+    <div style="height: 40%; margin: 0;
+    position: relative;
+    display: flex;
+    color: white;
+    background-image: url(/static/Hotels_c.jpg);
+    background-position: top;
+    width: 100%;
+    background-size: cover;">
+    <div style="
+        background: linear-gradient(to right, #000000, #ffffff30);
+        width: 100%;
+        align-content:center">
+        <h1 style=" 
+            align-items: center;
+            display: flex;">{{ hotel.name }}</h1>
+        <h5>{{ hotel.full_address }}</h5>
+        <a href="/book_hotel/{{business_id}}" class="btn btn-warning" style="margin: 010px;">Book Now</a>
+    </div>
+    </div>
             
     <div  class="container mt-5" style=" background-color: rgba(255, 255, 255, 0.6);backdrop-filter: blur(8px);  color: #000 !important;padding: 20px; border-radius: 8px;">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="display-5">{{ hotel.name }}</h1>
-            <a href="{% if hotel.booking_link %}{{ hotel.booking_link }}{% else %}#booking{% endif %}" class="btn btn-warning">Book Now</a>
-        </div>
+        
         <div class="row mb-4">
             <div class="col-md-12">
-                <p class="lead">{{ hotel.full_address }}</p>
                 <p><span class="badge badge-secondary">Rating: {{ hotel.rating }}</span> ({{ hotel.review_count }} reviews)</p>
             </div>
         </div>
@@ -52,11 +67,8 @@
 
 <style>
     #hotel_detail{
-        
-    background-image: url("/static/Hotels_c.jpg");
+        height: 100%;
         position: relative; 
-        height: 100vh; 
-        width: 100%; 
         background-size: cover; 
         background-position: center; 
         background-repeat: no-repeat; 
