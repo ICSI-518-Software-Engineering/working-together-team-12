@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="movie_home">
+    <div class="float-right mb-3">
+        <form class="form-inline position-relative">
+            <input class="form-control mr-sm-2" id ='city-search'; type="search" placeholder="change location" aria-label="Search" name="query">
+            <ul id="city-results" class="list-group" style="display: none;"></ul>
+            <button id='submit-btn' class="btn btn-outline-success my-2 my-sm-0" type="submit" style="background-color: lightgreen;">Search</button>
+        </form>
+    </div>
+    <div class="container">
+        <h1>Movies Playing in {{city_name}}</h1>
+        <div class="row">
+            {% for emsVersionId, movie in movies_dict.items %}
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100">
+                        <a href="{% url 'movie_detail' emsVersionId=emsVersionId %}"> 
+                            {% if movie.image_url %}
+                                <img src="{{ movie.image_url }}" class="card-img-top" alt="{{ movie.name }}">
+                            {% endif %}
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ movie.name }}</h5>
+                            <p>Tomato Rating: {{movie.rating}}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+      #movie_home {
+        padding: 20px;
+        background-image: url("/static/Movies_c.png");
+        position: relative; 
+        height: 100vh; 
+        width: 100%; 
+        background-size: cover; 
+        background-position: center; 
+        background-repeat: no-repeat; 
+        background-attachment: fixed; 
+        overflow-y: auto;
+    }
+    .card {
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out; 
+    transform: perspective(1000px) rotateY(0deg); 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+}
+.cinema-card img {
+    max-height: 100px; 
+    width: auto; 
+    margin-bottom: 10px; 
+}
+.card:hover {
+    transform: perspective(1000px) rotateY(10deg);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
+}
+#city-results {
+    position: absolute;
+    top: 100%; 
+    left: 0;
+    right: 0;
+    z-index: 1000; 
+    background-color: #fff; 
+    border: 1px solid #ccc; /* Light border around the dropdown */
+    border-top: none; /* Seamless connection with the search bar */
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1); /* Optional: Adds a subtle shadow */
+    list-style: none;
+}
+.list-group li {
+    cursor: pointer; /* Change cursor on hover to indicate interactivity */
+}
+
+.list-group li:hover {
+    background-color: #f8f9fa; /* Slightly different background on hover */
+}
+</style>
+<script>
+    document.getElementById('city-search').addEventListener('input', function() {
+    const value = this.value;
+    fetch(`/search-cities/?term=${value}`)
+        .then(response => response.json())
+        .then(data => {
+            const ul = document.getElementById('city-results');
+            if (data.length > 0) {
+                ul.innerHTML = '';  
+                data.slice(0, 5).forEach(city => {  // Limit to 5 results
+                    const li = document.createElement('li');
+                    li.textContent = `${city.city_name}, ${city.state_name}`;
+                    ul.appendChild(li);
+                    li.onclick = function() {
+                        document.getElementById('city-search').value = this.textContent;
+                        ul.style.display = 'none'; 
+                    };
+                });
+                ul.style.display = 'block';  
+            } else {
+                ul.style.display = 'none'; 
+            }
+        });
+});
+
+document.getElementById('city-results').addEventListener('click', function(event) {
+    if (event.target && event.target.nodeName === 'LI') {
+        document.getElementById('city-search').value = event.target.innerText;
+
+        document.getElementById('city-results').style.display = 'none';
+    }
+});
+document.getElementById('submit-btn').addEventListener('click', function() {
+    const city = document.getElementById('city-search').value;
+    const date = '2024-03-15';
+    fetch('/save-selection/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}' 
+        },
+        body: `city_name=${city}&visit_date=${date}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            window.location.href = '{% url "restraunt_list" %}';
+        } else {
+            alert('Failed to save selection.');
+        }
+    });
+});
+</script>
+{% endblock %}
