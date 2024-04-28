@@ -1,0 +1,31 @@
+from django.urls import path, re_path
+from . import views
+
+urlpatterns = [
+    path('register/', views.register, name='register'),
+    path('login/', views.user_login, name='login'),
+    path('adminlogin/', views.admin_login, name='adminlogin'),
+    path('logout/', views.user_logout, name='logout'),
+    path('profile/', views.profile, name='profile'),
+    path('history/', views.history, name='history'),
+    path('home/', views.home, name='home'),
+    path('book_ticket/', views.booking_view, name='book_ticket'),
+    path('search-cities/', views.search_cities, name='search_cities'),
+    path('save-selection/', views.save_selection, name='save_selection'),
+    path('movies-home', views.movies_home, name='movies_home'),
+    path('movies/<str:emsVersionId>', views.movie_detail, name='movie_detail'),
+    # path('select_seats/<slug:movie_name>/<slug:theater_name>/<slug:showtime>/', views.select_seats, name='select_seats'),
+    # path('select_seats/<slug:movie_name>/<slug:theater_name>/<slug:showtime>/', views.select_seats, name='select_seats'),
+    re_path(r'^select_seats/(?P<movie_name>[-\w]+)/(?P<theater_name>[-\w]+)/(?P<showtime>\d{2}:\d{2})/$', views.select_seats, name='select_seats'),
+    # path('seat_selection/<int:cinema_id>/film/<int:film_id>/showtime/<str:showtime>/date/<str:date>/booking_view',views.booking_view,name='booking_view'),  
+    # path('showtime/<str:emsVersionId>/<str:theaterId>/<str:showtime>/', views.showtime_detail, name='showtime_detail'),
+    path('hotels/', views.hotel_list, name='hotel_list'),
+    path('hotels/<str:business_id>/', views.hotel_detail, name='hotel_detail'),
+    path('restraunts/', views.restraunt_list, name='restraunt_list'),
+    path('restraunts/<str:business_id>/', views.restraunt_detail, name='restraunt_detail'),
+    path('search-flights/', views.search_flights, name='search_flights'),
+    path('flight-results/<origin_id>/<destination_id>/<date>/<sort_order>/<class_type>/', views.flight_results, name='flight_results'),
+    path('paymentportal/<int:booking_id>/', views.payment_portal, name='payment_portal'),
+    path('payment_confirmation/', views.payment_confirmation, name='payment_confirmation'),
+    path('show_tickets/<int:booking_id>/payment/<int:payment_id>/price/<int:price>', views.show_tickets, name='show_tickets'),
+]
