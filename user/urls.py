@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path('register/', views.register, name='register'),
     path('login/', views.user_login, name='login'),
+    path('', views.user_login, name='login'),
     path('adminlogin/', views.admin_login, name='adminlogin'),
     path('logout/', views.user_logout, name='logout'),
     path('profile/', views.profile, name='profile'),
@@ -14,6 +15,7 @@ urlpatterns = [
     path('save-selection/', views.save_selection, name='save_selection'),
     path('movies-home', views.movies_home, name='movies_home'),
     path('movies/<str:emsVersionId>', views.movie_detail, name='movie_detail'),
+    path('delete-payment-info/', views.delete_payment_info, name='delete_payment_info'),
     # path('select_seats/<slug:movie_name>/<slug:theater_name>/<slug:showtime>/', views.select_seats, name='select_seats'),
     # path('select_seats/<slug:movie_name>/<slug:theater_name>/<slug:showtime>/', views.select_seats, name='select_seats'),
     re_path(r'^select_seats/(?P<movie_name>[-\w]+)/(?P<theater_name>[-\w]+)/(?P<showtime>\d{2}:\d{2})/$', views.select_seats, name='select_seats'),

@@ -8,7 +8,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.conf import settings
 import random
-
+import time
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 
 from django.contrib.auth import authenticate, login, logout
@@ -38,12 +40,19 @@ def register(request):
         password2 = request.POST.get('password2')
         if len(error_messages)==0:
             user = User.objects.create_user(username=username, email=email, password=password1)
-            subject = 'Welcome to OneStopApp Site!'
-            message = f'Hi {username}, your account has been successfully created.'
+            context = {'username': username}
+            subject = 'Welcome to BookNow Site!'
+            html_message = render_to_string('welcome_email.html', context)
+            plain_message = strip_tags(html_message) 
             email_from = settings.EMAIL_HOST_USER
             recipient_list = [email]
-            print(email)
-            send_mail(subject, message, email_from, recipient_list)
+            # message = f'''Hi {username},\n\nWelcome to OneStopApp Site! We are excited to have you on board.\n\nYour account has been successfully created. Start exploring our platform to discover amazing movies, book tickets, find great hotels and restaurants, and plan your next adventure!\n\nFeel free to reach out to us if you have any questions or need assistance.\n\nBest regards,\nOneStopBooking Team'''            
+            # email_from = settings.EMAIL_HOST_USER
+            # recipient_list = [email]
+            # print(email)
+            # send_mail(subject, message, email_from, recipient_list)
+            send_mail(subject, plain_message, email_from, recipient_list, html_message=html_message)
+
             return JsonResponse({'success': True, 'redirect_url': reverse('login') })
         else:
             return JsonResponse({'success': False,'errors':error_messages[0]})
@@ -223,10 +232,10 @@ def booking_view(request):
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 def movies_home(request):
-    theaters_url = "https://flixster.p.rapidapi.com/theaters/list"  
-    
+    time.sleep(2)
     latest_selection = CitySelection.objects.filter(user=request.user).order_by('-created').first()
-    # print(latest_selection)
+    print('latest_selection in movies',latest_selection)
+    data={}
     if latest_selection is not None:
 
         parts = latest_selection.city_name.split(',')
@@ -245,14 +254,16 @@ def movies_home(request):
          data = {
                         'city_name': 'Albany',
                         'state_name': 'New York',
-                        'latitude': '42.6850',
-                        'longitude': '73.8248'
+                        'latitude': '42.6664"',
+                        'longitude': '-73.7987'
                     }                 
     print(data)
+    theaters_url = "https://flixster.p.rapidapi.com/theaters/list"  
+
     theaters_query = {"latitude":data['latitude'],"longitude":data['longitude'], "radius": "50"}
-    print(theaters_query)
+    print('theaters_query',theaters_query)
     theaters_headers = {
-        "X-RapidAPI-Key": "2c9d8f7b25msh4a71f9ec9229738p135235jsnca1ba4c697c8",  
+        'X-RapidAPI-Key': '7dbc098597msh8dfc40d52e8a0fcp173ffejsneb6d1efbdb5d',  
         "X-RapidAPI-Host": "flixster.p.rapidapi.com"
     }
     theaters_response = requests.get(theaters_url, headers=theaters_headers, params=theaters_query)
@@ -272,7 +283,7 @@ def movies_home(request):
 
             movies = detail_data.get('data', {}).get('theaterShowtimeGroupings', {}).get('movies', [])
             for movie in movies:
-                print("movie",movie)
+                # print("movie",movie)
                 emsVersionId = movie.get('emsVersionId')
                 if emsVersionId:  
                     if emsVersionId not in movies_dict:
@@ -321,7 +332,7 @@ def movie_detail(request, emsVersionId):
     querystring = {"emsVersionId":emsVersionId}
 
     headers = {
-        "X-RapidAPI-Key": "2c9d8f7b25msh4a71f9ec9229738p135235jsnca1ba4c697c8",
+        'X-RapidAPI-Key': '7dbc098597msh8dfc40d52e8a0fcp173ffejsneb6d1efbdb5d',
         "X-RapidAPI-Host": "flixster.p.rapidapi.com"
     }
     response = requests.get(url, headers=headers, params=querystring)
@@ -359,7 +370,7 @@ def showtime_detail(request, emsVersionId, theaterId, showtime):
 
 def hotel_list(request):
     latest_selection = CitySelection.objects.filter(user=request.user).order_by('-created').first()
-    print(latest_selection)
+    print('latest_selection in hotels',latest_selection)
     if latest_selection is not None:
         parts = latest_selection.city_name.split(',')
         if len(parts) >= 2:
@@ -392,7 +403,7 @@ def hotel_list(request):
         "region": "us"
     }
     headers = {
-        "X-RapidAPI-Key": "f33f36a08cmsha7dd7ba39b3c3c2p1c4f4fjsnf3c42a90f35e",
+        "X-RapidAPI-Key": "7dbc098597msh8dfc40d52e8a0fcp173ffejsneb6d1efbdb5d",
         "X-RapidAPI-Host": "local-business-data.p.rapidapi.com"
     }
 
@@ -436,7 +447,7 @@ def restraunt_list(request):
 
     url = "https://local-business-data.p.rapidapi.com/search"
     querystring = {
-        "query": f"hotels near {data['city_name']}, {data['state_name']}",
+        "query": f"Restraunts near {data['city_name']}, {data['state_name']}",
         "limit": "10",
         "lat": data['latitude'],
         "lng": data['longitude'],
@@ -446,7 +457,7 @@ def restraunt_list(request):
     }
     print(querystring)
     headers = {
-        "X-RapidAPI-Key": "f33f36a08cmsha7dd7ba39b3c3c2p1c4f4fjsnf3c42a90f35e",
+        "X-RapidAPI-Key": "7dbc098597msh8dfc40d52e8a0fcp173ffejsneb6d1efbdb5d",
         "X-RapidAPI-Host": "local-business-data.p.rapidapi.com"
     }
 
@@ -472,7 +483,7 @@ def search_flights(request):
         class_type = request.POST.get('class_type')
     
         headers = {
-            "X-RapidAPI-Key": "f980ede61dmshd87d831abfdc365p13d4e5jsncfcae06fb6c8",
+            "X-RapidAPI-Key": "7dbc098597msh8dfc40d52e8a0fcp173ffejsneb6d1efbdb5d",
             "X-RapidAPI-Host": "priceline-com-provider.p.rapidapi.com"
         }
         origin_response = requests.get(
@@ -501,7 +512,7 @@ def search_flights(request):
 
 def flight_results(request, origin_id, destination_id, date, sort_order,class_type):
     headers = {
-        "X-RapidAPI-Key": "f980ede61dmshd87d831abfdc365p13d4e5jsncfcae06fb6c8",
+        "X-RapidAPI-Key": "7dbc098597msh8dfc40d52e8a0fcp173ffejsneb6d1efbdb5d",
         "X-RapidAPI-Host": "priceline-com-provider.p.rapidapi.com"
     }
     querystring = {
@@ -590,9 +601,12 @@ def save_selection(request):
         print('city_name form save_selection',city_name)
         
         visit_date = datetime.strptime(request.POST.get('visit_date'), '%Y-%m-%d').date()
-        print(city_name,visit_date)
+        # print(city_name,visit_date)
         CitySelection.objects.create(user=request.user,city_name=city_name, visit_date=visit_date)
         redirect_url = reverse('movies_home') 
+        latest_selection = CitySelection.objects.filter(user=request.user).order_by('-created').first()
+        print('lastest form save_selection',latest_selection)
+        time.sleep(2)
         return JsonResponse({'status': 'success', 'redirect_url': redirect_url})
     return JsonResponse({'status': 'failed'}, status=400)
 
@@ -631,24 +645,49 @@ def show_tickets(request, booking_id,payment_id,price):
     ticket = get_object_or_404(MovieTickets, booking_id=booking_id, user=request.user)
     payment_method = get_object_or_404(PaymentDetail, id=payment_id, user_profile__user=request.user)
     card_ending = payment_method.card_number[-4:]
-    subject = 'Your Booking Details'
-    message = f"""
-    Booking ID: {booking_id}
-    Movie: {ticket.movie}
-    Theatre: {ticket.theater}
-    Showtime: {ticket.showtime}
-    Paid using the card ending with {card_ending}
-    Price: ${price}
-    """
-    from_email = settings.EMAIL_HOST_USER  
-    to_email = [request.user.email] 
+    subject = 'Your Booking Details from BookNow'
+    # message = f"""
+    # Booking ID: {booking_id}
+    # Movie: {ticket.movie}
+    # Theatre: {ticket.theater}
+    # Showtime: {ticket.showtime}
+    # Paid using the card ending with {card_ending}
+    # Price: ${price}
+    # """
+    # from_email = settings.EMAIL_HOST_USER  
+    # to_email = [request.user.email] 
 
-    send_mail(subject, message, from_email, to_email)
+    # send_mail(subject, message, from_email, to_email)
+   
+    context = {
+    'booking_id': booking_id,
+    'movie': ticket.movie,
+    'theater': ticket.theater,
+    'showtime': ticket.showtime,
+    'card_ending': card_ending,
+    'price': price,
+    }
+    html_message = render_to_string('booking_confirmation_email.html', context)
+    plain_message = strip_tags(html_message)  
+
+    from_email = settings.EMAIL_HOST_USER
+    to_email = [request.user.email]
+
+    send_mail(subject, plain_message, from_email, to_email, html_message=html_message)
     context = {
         'ticket': ticket,
         'booking_id': booking_id,
         'payment_method':payment_method,
         'price':price
     }
-
     return render(request, 'show_tickets.html', context)
+def delete_payment_info(request):
+    payment_detail_card_number = request.POST.get('payment_detail_card_number')
+    try:
+        payment_detail = PaymentDetail.objects.get(card_number=payment_detail_card_number, user_profile__user=request.user)
+        payment_detail.delete()
+        messages.success(request, "Payment detail removed successfully.")
+    except PaymentDetail.DoesNotExist:
+        messages.error(request, "Payment detail not found.")
+
+    return redirect('profile') 

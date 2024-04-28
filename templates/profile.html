@@ -119,6 +119,11 @@
                     <strong>Card Holder Name:</strong> {{ payment_detail.card_holder_name }}
                     <strong>Card Number:</strong> **** **** **** {{ payment_detail.card_number|slice:"-4:" }}
                     <strong>Expiry Date:</strong> {{ payment_detail.expiry_date|date:"m/Y" }}
+                    <form method="post" action="{% url 'delete_payment_info' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="payment_detail_card_number" value="{{ payment_detail.card_number }}">
+                        <button type="submit" class="remove-card-btn">Remove Card</button>
+                    </form>
                 </li>
                 {% empty %}
                 <li class="no-payment">No payment details added.</li>
@@ -460,11 +465,13 @@
             let isValid = true;
             const cardNumber = document.getElementById('card_number');
             const cvv = document.getElementById('cvv');
-            if (cardNumber.value.length !== 16) {
+            const cardNumberValue = cardNumber.value.trim();
+            const cardNumberRegex = /^[0-9]{16}$/;
+            if (!cardNumberRegex.test(cardNumberValue)) {
                 showError(cardNumber, 'Card number must be 16 digits.');
                 isValid = false;
             }
-            if (cvv.value.length !== 3) {
+            if (cvv.value.trim().length !== 3) {
                 showError(cvv, 'CVV must be 3 digits.');
                 isValid = false;
             }
