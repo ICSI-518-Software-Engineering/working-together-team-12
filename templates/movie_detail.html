@@ -49,18 +49,33 @@
 
 {% block content %}
 <div id="movie_container">
-    <div class="row" style="height: 100%;     width: 100%;">
+    <div style="height: 20%; margin: 0;
+    position: relative;
+    display: flex;
+    color: white;
+    background-image: url(/static/Movies_c.png);
+    background-position: center;
+    width: 100%;">
+    <div style="
+    background: linear-gradient(to right, #000000, #ffffff30);
+    width: 100%;
+    align-content:center">
+        <h1 style=" 
+        align-items: center;
+        display: flex;">Showtimes - {{movie.name}}</h1>
+        <h5>Rating - {{ movie.rating }}%</h5>
+    </div>
+    </div>
+    <div class="row" style="width: 100%;height: 80%;">
         <div class="col-md-6 scrollable-div" style="height: 100%; overflow: scroll;">
             <div class="movie-details">
-                <img src="{{ movie_data.poster_image }}" alt="Movie Poster" class="movie-poster">
-                <div class="movie-info"><strong>Synopsis:</strong> {{ movie_data.synopsis }}</div>
-                <div class="movie-info"><strong>Genres:</strong> {{ movie_data.genres|join:", " }}</div>
-                <div class="movie-info"><strong>Tomato Rating:</strong> {{ movie_data.rating }}</div>
+                <img src="{{ movie.image_url }}" alt="Movie Poster" class="movie-poster" style="width: 50%;">
+                <div class="movie-info"><strong>Synopsis:</strong> {{ movie.synopsis }}</div>
+                <div class="movie-info"><strong>Genres:</strong> {{ movie.genres|join:", " }}</div>
             </div>
         </div>
 
         <div class="col-md-6">
-            <h2 class="mb-4">Showtimes for {{ movie.name }}</h2>
             {% for theater_id, theater_info in movie.theaters.items %}
                 <div class="theater-card">
                     <div class="theater-name">{{ theater_info.name }}</div>
@@ -86,7 +101,6 @@
 }
 
     #movie_container{
-        background-image: url("/static/Movies_c.png");
         position: relative; 
         height: 90vh; 
         width: 100%; 

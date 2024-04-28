@@ -4,8 +4,7 @@
 {% block content %}
 <style>
     .starting-page-container1 {
-
-        width: 80%;
+        width: 78%;
         background: rgba(255, 255, 255, 0.8);
         border-radius: 15px;
         box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -17,6 +16,7 @@
         display: flex;
         flex-wrap: wrap; 
         align-items: center;
+        margin-top: -35px;
         
     }
     .container {
@@ -26,8 +26,8 @@
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
   }
   .description {
-    font-family: "Kalam", cursive;
-    font-size: 18px; 
+    font-family: cursive;
+    font-size: 15px;
 
   }
     .starting-page-container {
@@ -297,83 +297,74 @@
 }
     
 </style>
-<div class="background-layer" id="layer1"></div>
-<div class="background-layer" id="layer2"></div>
 
-<!-- <div class="starting-page-container">
-    <div class="search-container">
-        <div class="input-section destination">
-            <input type="text" id="city-search" placeholder="Where can we take you?" class="search-field">
-            <label for="city-search" class="search-label">DESTINATION</label>
+<div style="    background: #939393;border-radius: 0% 0% 10% 10%; padding: 2%;">
+    <!-- <div class="background-layer" id="layer1"></div>
+    <div class="background-layer" id="layer2"></div> -->
+
+    <div class="starting-page-container">
+        <div class="input-section">
+            <h2>LOCATION</h2>
+            <input type="text" id="city-search" placeholder="Start typing a city name...">
+            <ul id="city-results" style="display: none;"></ul>
         </div>
-        <div class="input-section date-range">
-            <input type="text" id="date-input" placeholder="Date" class="search-field">
-            <label for="date-input" class="search-label">1 NIGHT</label>
+
+        <div class="input-section">
+            <h2>DATE</h2>
+            <input type="date" id="date-input">
         </div>
-        <button id="find-hotel-btn" class="search-btn">Find Hotels</button>
-    </div>
-</div> -->
-<div class="starting-page-container">
-    <div class="input-section">
-        <h2>LOCATION</h2>
-        <input type="text" id="city-search" placeholder="Start typing a city name...">
-        <ul id="city-results" style="display: none;"></ul>
+        
+        <div class="input-section">
+            <button id="submit-btn">Find Services</button>
+        </div>
     </div>
 
-    <div class="input-section">
-        <h2>DATE</h2>
-        <input type="date" id="date-input">
-    </div>
-    
-    <div class="input-section">
-        <button id="submit-btn">Find Services</button>
-    </div>
+    <div class="services-container text-center row">
+        <h2 class="col-sm-5" style="    text-decoration: underline;"> Our Services</h2>
+        <div class="col-sm-6  justify-content-center">
+            <div class="col-sm-4 service-item">
+                <a href="{% url 'movies_home' %}">
+                    <!-- <img src="{% static 'movies.jpg' %}" alt="Movies" class="service-icon">
+                    -->
+                    <div class="service-icon">
+                        <i class="fas fa-film"></i> 
+                        <p>Movies</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-4 service-item">
+                <a href="{% url 'hotel_list' %}">
+                    <!-- <img src="{% static 'hotels.png' %}" alt="Hotels" class="service-icon">
+                    -->
+                    <div class="service-icon">
+                        <i class="fas fa-hotel"></i> 
+                        <p>Hotels</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-4 service-item">
+                <a href="{% url 'restraunt_list' %}">
+                    <!-- <img src="{% static 'restraunt.png' %}" alt="Restraunts" class="service-icon">
+                    -->
+                    <div class="service-icon">
+                        <i class="fas fa-utensils"></i> 
+                        <p >Restraunts</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-4 service-item">
+                <a href="{% url 'search_flights' %}">
+                    <!-- <img src="{% static 'flights1.png' %}" alt="Flights" class="service-icon"> -->
+                    <div class="service-icon">
+                        <i class="fas fa-plane"></i> 
+                        <p>Flights</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+</div>
 </div>
 
-<div class="services-container text-center row">
-    <h2 class="col-sm-5"> Our Services</h2>
-    <div class="col-sm-6  justify-content-center">
-        <div class="col-sm-4 service-item">
-            <a href="{% url 'movies_home' %}">
-                <!-- <img src="{% static 'movies.jpg' %}" alt="Movies" class="service-icon">
-                 -->
-                 <div class="service-icon">
-                    <i class="fas fa-film"></i> 
-                    <p>Movies</p>
-                 </div>
-            </a>
-        </div>
-        <div class="col-sm-4 service-item">
-            <a href="{% url 'hotel_list' %}">
-                <!-- <img src="{% static 'hotels.png' %}" alt="Hotels" class="service-icon">
-                 -->
-                 <div class="service-icon">
-                    <i class="fas fa-hotel"></i> 
-                    <p>Hotels</p>
-                 </div>
-            </a>
-        </div>
-        <div class="col-sm-4 service-item">
-            <a href="{% url 'restraunt_list' %}">
-                <!-- <img src="{% static 'restraunt.png' %}" alt="Restraunts" class="service-icon">
-                 -->
-                 <div class="service-icon">
-                    <i class="fas fa-utensils"></i> 
-                    <p >Restraunts</p>
-                 </div>
-            </a>
-        </div>
-        <div class="col-sm-4 service-item">
-            <a href="{% url 'search_flights' %}">
-                <!-- <img src="{% static 'flights1.png' %}" alt="Flights" class="service-icon"> -->
-                <div class="service-icon">
-                    <i class="fas fa-plane"></i> 
-                    <p>Flights</p>
-                 </div>
-            </a>
-        </div>
-    </div>
-</div>
 <div class="starting-page-container1">
     <a class="navbar-brand" href="{% url 'home' %}" style="background-color: white; border-radius: 10px; padding-left: 10px; box-shadow: #000; margin-bottom: 10px; margin-left: 0px;">BookNow
         <img src="{% static 'logo.png' %}" alt="Logo" style="width: 40px; height: 40px;">

@@ -21,7 +21,50 @@
     </div>
         <input type="hidden" name="booking_id" value="{{ ticket.booking_id }}">
         <input type="hidden" name="total_price" value="{{ total_price }}">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#paymentModal">
+            Add Payment 
+        </button>
         <button type="button" id="finish-payment">Finish Payment</button>
+
+        <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="paymentModalLabel">New Payment Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="width: 10%;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number:</label>
+                                <input type="text" class="form-control" id="cardNumber" name="card_number" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cardHolderName">Card Holder Name:</label>
+                                <input type="text" class="form-control" id="cardHolderName" name="card_holder_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="expiryDate">Expiry Date:</label>
+                                <input type="month" class="form-control" id="expiryDate" name="expiry_date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cvv">CVV:</label>
+                                <input type="text" class="form-control" id="cvv" name="cvv" required>
+                            </div>
+                            <div class="form-group form-check" >
+                                <input type="checkbox" class="form-check-input" id="saveForFuture" name="save_for_future" style="visibility: visible;">
+                                <label class="form-check-label" for="saveForFuture">Save for future use</label>
+                            </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" form="newPaymentForm" id = "PaymentFormSubmit" >Save details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </form>
 </div>
 <style>
@@ -173,6 +216,36 @@ button:hover {
         .catch(error => {
             console.error('Error:', error);
         });
+    });
+
+    document.getElementById('PaymentFormSubmit').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Get the payment details
+        var cardNumber = document.getElementById('cardNumber').value;
+        var cardHolderName = document.getElementById('cardHolderName').value;
+        var expiryDate = document.getElementById('expiryDate').value;
+        var cvv = document.getElementById('cvv').value;
+        var saveForFuture = document.getElementById('saveForFuture').checked;
+        
+        // Simulate saving the data and getting an ID for the payment method
+        var paymentMethodId = 25; // Replace with actual ID from the server response
+
+        // Assuming the card number is unique and can be used as part of the option text
+        var cardLastFourDigits = cardNumber.slice(-4);
+        
+        // Add a new option to the payment_method select
+        var paymentMethodSelect = document.querySelector('select[name="payment_method"]');
+        var newOption = new Option('Card ending in ' + cardLastFourDigits, paymentMethodId, true, true);
+        paymentMethodSelect.add(newOption);
+
+        // Close the modal
+            $('#paymentModal').modal('hide');
+
+        // // Optionally, clear the form fields
+        // document.getElementById('newPaymentForm').reset();
+        
+        // Handle actual form submission here if needed, e.g., via AJAX
     });
 </script>
 {% endblock %}

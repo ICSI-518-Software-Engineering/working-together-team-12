@@ -26,7 +26,9 @@
                 <i class="fas fa-eye password-toggle" onclick="togglePasswordVisibility();" aria-hidden="true"></i>
             </div>
         </div>
-
+        {% if message%}
+            <p style="    font-size: 12px; color: red; text-align-last: center;">{{message}}</p>
+        {%endif%}
         <div class="form-group justify-content-between">
             <div class="checkbox">
                 <input type="checkbox" id="remember-me" value="remember-me">

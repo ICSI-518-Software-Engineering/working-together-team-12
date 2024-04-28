@@ -30,7 +30,7 @@
         background-position: center;
         transition: background-image 1s ease-in-out;
         height: 100vh; 
-        width: 98vw;
+        width: 100vw;
         background-image: '{% static "movies_c.png" %}';
         }
         .navbar, .dropdown-menu {
@@ -67,7 +67,7 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg navbar-light" style="top: 0px;position: sticky;">
         <a class="navbar-brand" href="{% url 'home' %}" style="background-color: white; border-radius: 10px; padding-left: 10px; box-shadow: #000;">BookNow
             <img src="{% static 'logo.png' %}" alt="Logo" style="width: 40px; height: 40px; margin-right: 10px; vertical-align: middle;">
         </a>

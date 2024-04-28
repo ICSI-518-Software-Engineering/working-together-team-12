@@ -25,16 +25,16 @@
         </div>
     </div>
 
-    <div class="container">
+    <div class="container" id="container1">
         <h2>Add Passenger Details</h2>
             {% csrf_token %}
             <div id="passengerContainer">
-                <!-- Passenger fields will be added here -->
             </div>
             <button type="button" id="addPassengerBtn">Add Passenger</button>
+        <button type="button" id="nextBtn1">Next</button>
     </div>
 
-    <div class="container">
+    <div class="container" id="container2" style="display: none;">
         <p>Total Price: <input type="text" id="totalprice" name="totalprice" value= 0 hidden/>  </p>
         <h2>Confirm Payment Method</h2>
         <div class="custom-select-wrapper">
@@ -44,15 +44,91 @@
                 {% endfor %}
             </select>
         </div>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#paymentModal">
+            Add Payment 
+        </button>
+
+        <button type="button" id="backBtn2">Back</button>
+    <button type="button" id="nextBtn2">Next</button>
+    
     </div>
 
-    <div class="container">
+    <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">New Payment Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="width: 10%;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                        <div class="form-group">
+                            <label for="cardNumber">Card Number:</label>
+                            <input type="text" class="form-control" id="cardNumber" name="card_number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cardHolderName">Card Holder Name:</label>
+                            <input type="text" class="form-control" id="cardHolderName" name="card_holder_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expiryDate">Expiry Date:</label>
+                            <input type="month" class="form-control" id="expiryDate" name="expiry_date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cvv">CVV:</label>
+                            <input type="text" class="form-control" id="cvv" name="cvv" required>
+                        </div>
+                        <div class="form-group form-check" >
+                            <input type="checkbox" class="form-check-input" id="saveForFuture" name="save_for_future" style="visibility: visible;">
+                            <label class="form-check-label" for="saveForFuture">Save for future use</label>
+                        </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" form="newPaymentForm" id = "PaymentFormSubmit" >Save details</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="container3" style="display: none;">
         <button type="submit" id="addPassengerBtn">Book Flight</button>
+        <button type="button" id="backBtn3">Back</button>
     </div>
 
 </form>
 <script>
-    
+    document.addEventListener("DOMContentLoaded", function() {
+        const container1 = document.getElementById("container1");
+        const container2 = document.getElementById("container2");
+        const container3 = document.getElementById("container3");
+        const nextBtn1 = document.getElementById("nextBtn1");
+        const nextBtn2 = document.getElementById("nextBtn2");
+        const backBtn2 = document.getElementById("backBtn2");
+        const backBtn3 = document.getElementById("backBtn3");
+
+        nextBtn1.addEventListener("click", function() {
+            container1.style.display = "none";
+            container2.style.display = "block";
+        });
+
+        nextBtn2.addEventListener("click", function() {
+            container2.style.display = "none";
+            container3.style.display = "block";
+        });
+
+        backBtn2.addEventListener("click", function() {
+            container2.style.display = "none";
+            container1.style.display = "block";
+        });
+
+        backBtn3.addEventListener("click", function() {
+            container3.style.display = "none";
+            container2.style.display = "block";
+        });
+    });
 document.addEventListener('DOMContentLoaded', function() {
         var passengerContainer = document.getElementById('passengerContainer');
         var addPassengerBtn = document.getElementById('addPassengerBtn');
@@ -87,6 +163,36 @@ document.addEventListener('DOMContentLoaded', function() {
     index++; // Increment the index each time a new passenger is added
 });
 
+document.getElementById('PaymentFormSubmit').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Get the payment details
+        var cardNumber = document.getElementById('cardNumber').value;
+        var cardHolderName = document.getElementById('cardHolderName').value;
+        var expiryDate = document.getElementById('expiryDate').value;
+        var cvv = document.getElementById('cvv').value;
+        var saveForFuture = document.getElementById('saveForFuture').checked;
+        
+        // Simulate saving the data and getting an ID for the payment method
+        var paymentMethodId = 'newId'; // Replace with actual ID from the server response
+
+        // Assuming the card number is unique and can be used as part of the option text
+        var cardLastFourDigits = cardNumber.slice(-4);
+        
+        // Add a new option to the payment_method select
+        var paymentMethodSelect = document.querySelector('select[name="payment_method"]');
+        var newOption = new Option('Card ending in ' + cardLastFourDigits, paymentMethodId, true, true);
+        paymentMethodSelect.add(newOption);
+
+        // Close the modal
+            $('#paymentModal').modal('hide');
+
+        // // Optionally, clear the form fields
+        // document.getElementById('newPaymentForm').reset();
+        
+        // Handle actual form submission here if needed, e.g., via AJAX
+    });
+
     });
 </script>
 
@@ -99,6 +205,13 @@ document.addEventListener('DOMContentLoaded', function() {
     border: 1px solid #ddd;
     padding: 10px;
     margin-bottom: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    width: 100%;
+    flex-flow: column;
+    gap: 10px;
 }
 
 .removePassengerBtn {

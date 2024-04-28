@@ -101,7 +101,7 @@
         height: 25px;
         background: #ff9800;
         top: 0;
-        left: 2px;
+        left: 0px;
     }
       
       .seat label:hover::after {

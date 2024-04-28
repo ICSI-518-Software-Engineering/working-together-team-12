@@ -73,6 +73,8 @@ def user_login(request):
         if user:
             login(request, user)
             return redirect(home)
+        else:
+            return render(request, 'login.html', {"message": "Invalid Username or Password"})
     return render(request, 'login.html')
 
 def admin_login(request):
@@ -159,13 +161,13 @@ def profile(request):
     UserProfile.objects.get_or_create(user=request.user) 
     user_profile = request.user.userprofile
     payment_details = user_profile.payment_details.all()  
+    print(payment_details)
     profile_form = UserProfileForm(instance=user_profile)
     payment_form = PaymentDetailForm()
     # print(user_profile)
 
     
     form_type = request.POST.get('type')
-    print('form_type',form_type)
     if request.method == 'POST':
 
         # print('post method in profile')
@@ -174,15 +176,16 @@ def profile(request):
             first_name = request.POST.get('firstName')
             last_name = request.POST.get('lastName')
             email = request.POST.get('email')
-            flat_details = request.POST.get('flatDetails')
-            line1 = request.POST.get('line1')
-            line2 = request.POST.get('line2')
-            state = request.POST.get('state')
+            # flat_details = request.POST.get('flatDetails')
+            # line1 = request.POST.get('line1')
+            # line2 = request.POST.get('line2')
+            # state = request.POST.get('state')
             country = request.POST.get('country')
             country_code = request.POST.get('countryCode')
             phno = request.POST.get('phno')
             profile_pic = request.FILES.get('profileImage')
             matching_profiles = UserProfile.objects.filter(email=email)
+
             if len(matching_profiles)>1:
                 return JsonResponse({'success': False, 'error':'email already exists'})
             if len(matching_profiles)>=1 and matching_profiles[0].user!=request.user:
@@ -194,16 +197,38 @@ def profile(request):
                     'name': first_name,
                     'lname':last_name,
                     'email': email,
-                    'address': flat_details,
-                    'line1': line1,
-                    'line2': line2,
-                    'state': state,
+                    # 'address': flat_details,
+                    # 'line1': line1,
+                    # 'line2': line2,
+                    # 'state': state,
                     'country': country,
                     'country_code': int(country_code),
                     'phno': int(phno),
                 }
             if profile_pic!= '': 
                 defaults['profile_pic'] = profile_pic
+            user_profile, created = UserProfile.objects.update_or_create(
+                user=user_instance,
+                defaults=defaults
+            )
+
+            print('created',created)
+            print(user_profile)
+            return JsonResponse({'success': True, 'redirect_url': reverse('profile') })
+
+        elif form_type == 'AddressForm':
+            flat_details = request.POST.get('flatDetails')
+            line1 = request.POST.get('line1')
+            line2 = request.POST.get('line2')
+            state = request.POST.get('state')
+
+            user_instance = request.user
+            defaults={
+                    'address': flat_details,
+                    'line1': line1,
+                    'line2': line2,
+                    'state': state,
+                }
             user_profile, created = UserProfile.objects.update_or_create(
                 user=user_instance,
                 defaults=defaults
@@ -231,12 +256,48 @@ def profile(request):
             )
             return JsonResponse({'success': True, 'redirect_url': reverse('profile') })
             
+    bookings = MovieTickets.objects.filter(user=request.user,payment=True).order_by('-showtime')
 
+    flight_bookings = FlightBooking.objects.filter(user=request.user)
+    flight_bookings_filtered = []
+    for booking in flight_bookings:
+        data = []
+        data.extend([booking.booking_id, booking.arrival_airport, booking.departure_airport,  booking.duration, booking.price])
+        # passengers = Passenger.objects.filter(booking=booking)
+        # for passenger in passengers:
+        #     data.extend(passenger.first_name,passenger.last_name,passenger.age,passenger.dl_number)
+        flight_bookings_filtered.append(data)
+
+    hotel_bookings = HotelBooking.objects.filter(user=request.user)
+    hotel_bookings_filtered = []
+
+    for booking in hotel_bookings:
+        data = []
+        data.extend([booking.booking_id, booking.hotel_name, booking.checkin_date, booking.checkout_date, booking.duration, booking.price])
+        # passengers = HotelCustomer.objects.filter(booking=booking)
+        # for passenger in passengers:
+        #     data.append([passenger.first_name,passenger.last_name,passenger.age,passenger.dl_number])
+        hotel_bookings_filtered.append(data)
+
+    restraunt_bookings = RestrauntBooking.objects.filter(user=request.user)
+    restraunt_bookings_filtered = []
+
+    for booking in restraunt_bookings:
+        data = []
+        data.extend([booking.booking_id, booking.restraunt_name, booking.visit_date])
+        # passengers = RestrauntCustomer.objects.filter(booking=booking)
+        # for passenger in passengers:
+        #     data.extend([passenger.first_name,passenger.last_name,passenger.age,passenger.dl_number])
+        restraunt_bookings_filtered.append(data)
     # print(user_profile.profile_pic.url)
     context = {
         'user_profile': user_profile,
         'payment_form': payment_form,
         'payment_details': payment_details,
+        'bookings': bookings,
+        'flight_bookings': flight_bookings_filtered,
+        'hotel_bookings': hotel_bookings_filtered,
+        'restraunt_bookings': restraunt_bookings_filtered
     }
     return render(request, 'profile.html', context)
 
@@ -593,7 +654,7 @@ def confirm_hotel_booking(request):
         print("sending mail")
         print(customers)
         send_mail(subject, plain_message, from_email, to_email, html_message=html_message)
-        return redirect("history")
+        return redirect("home")
 
 def restraunt_list(request):
     latest_selection = CitySelection.objects.filter(user=request.user).order_by('-created').first()
@@ -685,6 +746,14 @@ def confirm_restraunt_booking(request):
             'card_ending': request.POST.get('payment_method'),
         }
 
+        print("save payment",request.POST.get("save_for_future"))
+        print("c no",request.POST.get("card_number"))
+        print("c holder name",request.POST.get("card_holder_name"))
+        print("expiry date",request.POST.get("expiry_date"))
+        print("cvv",request.POST.get("cvv"))
+
+        ## save here
+
         restraunt_booking = RestrauntBooking(
             user = request.user,
             booking_id = booking_id,
@@ -713,7 +782,7 @@ def confirm_restraunt_booking(request):
         print("sending mail")
         print(customers)
         send_mail(subject, plain_message, from_email, to_email, html_message=html_message)
-        return redirect("history")
+        return redirect("home")
 
 
 def search_flights(request):
@@ -831,7 +900,7 @@ def add_passengers(request):
         to_email = [request.user.email]
         print("sending mail")
         send_mail(subject, plain_message, from_email, to_email, html_message=html_message)
-        return redirect("history")
+        return redirect("home")
 
     return render(request, 'passenger_details.html')
 
@@ -949,13 +1018,13 @@ def payment_portal(request, booking_id):
     number_of_tickets = len(ticket.tickets.split(',')) 
     total_price = number_of_tickets * 10
     
-    payment_options = PaymentDetail.objects.filter(user_profile__user=request.user)
+    # payment_options = PaymentDetail.objects.filter(user_profile__user=request.user)
     
     context = {
         'ticket': ticket,
         'number_of_tickets': number_of_tickets,
         'total_price': total_price,
-        'payment_options': payment_options,
+        # 'payment_options': payment_options,
     }
     
     return render(request, 'payment_portal.html', context)
@@ -977,8 +1046,8 @@ def payment_confirmation(request):
 def show_tickets(request, booking_id,payment_id,price):
 
     ticket = get_object_or_404(MovieTickets, booking_id=booking_id, user=request.user)
-    payment_method = get_object_or_404(PaymentDetail, id=payment_id, user_profile__user=request.user)
-    card_ending = payment_method.card_number[-4:]
+    # payment_method = get_object_or_404(PaymentDetail, id=payment_id, user_profile__user=request.user)
+    # card_ending = payment_method.card_number[-4:]
     subject = 'Your Booking Details from BookNow'
 
     print(str(ticket))
@@ -989,7 +1058,7 @@ def show_tickets(request, booking_id,payment_id,price):
     'theater': ticket.theater,
     'showtime': ticket.showtime,
     'ticket': ticket.tickets,
-    'card_ending': card_ending,
+    'card_ending': "1234",
     'price': price,
     }
     html_message = render_to_string('booking_confirmation_email.html', context)
@@ -1002,7 +1071,7 @@ def show_tickets(request, booking_id,payment_id,price):
     context = {
         'ticket': ticket,
         'booking_id': booking_id,
-        'payment_method':payment_method,
+        'payment_method':{},
         'price':price
     }
     return render(request, 'show_tickets.html', context)
