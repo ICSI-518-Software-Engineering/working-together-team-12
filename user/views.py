@@ -391,7 +391,118 @@ def hotel_detail(request, business_id):
 
 
 
+def search_flights(request):
+    if request.method == 'POST':
+        origin = request.POST.get('origin')
+        destination = request.POST.get('destination')
+        departure_date = request.POST.get('departure_date')
+        sort_order = request.POST.get('sort_order')
+        class_type = request.POST.get('class_type')
 
+        headers = {
+            "X-RapidAPI-Key": "f980ede61dmshd87d831abfdc365p13d4e5jsncfcae06fb6c8",
+            "X-RapidAPI-Host": "priceline-com-provider.p.rapidapi.com"
+        }
+        origin_response = requests.get(
+            "https://priceline-com-provider.p.rapidapi.com/v1/flights/locations",
+            headers=headers, params={"name": origin}
+        )
+        destination_response = requests.get(
+            "https://priceline-com-provider.p.rapidapi.com/v1/flights/locations",
+            headers=headers, params={"name": destination}
+        )
+        
+        if origin_response.ok and destination_response.ok:
+            origin_id = origin_response.json()[0]['id']
+            destination_id = destination_response.json()[0]['id']
+            print(origin_id,destination_id)
+
+            # Redirect to the flight results page, passing necessary information
+            return redirect('flight_results', origin_id=origin_id, destination_id=destination_id, date=departure_date, sort_order=sort_order,class_type=class_type)
+        else:
+            error_message = "There was a problem finding the locations. Please try again."
+            return render(request, 'search_flights.html', {'error_message': error_message})
+
+    return render(request, 'flights_home.html')
+
+def flight_results(request, origin_id, destination_id, date, sort_order,class_type):
+    headers = {
+        "X-RapidAPI-Key": "f980ede61dmshd87d831abfdc365p13d4e5jsncfcae06fb6c8",
+        "X-RapidAPI-Host": "priceline-com-provider.p.rapidapi.com"
+    }
+    querystring = {
+        "location_arrival": destination_id,
+        "date_departure": date,
+        "sort_order": sort_order.upper(),  
+        "location_departure": origin_id,
+        "class_type":class_type.upper(),
+        "itinerary_type": "ONE_WAY",  
+    }
+    print(querystring)
+    response = requests.get(
+        "https://priceline-com-provider.p.rapidapi.com/v1/flights/search",
+        headers=headers, params=querystring
+    )
+    if response.ok:
+        flight_data = []
+    if response.ok:
+        flights_json = response.json()  
+        # print('flight_json',flights_json)
+        listings = flights_json.get('data', {}).get('listings', [])
+        # print('---------------------------------------')
+        # print(listings)
+        # print('---------------------------------------')
+
+        for flight in listings:
+            if 'airlines' in flight and flight['airlines']:
+                # print('---------------------------------------')
+                # print(flight)
+                # print('---------------------------------------')
+
+                airline=flight.get('airlines',[])[0]
+                airline
+                flight_details = {
+                    'id': flight.get('id'),
+                    'price': flight.get('totalPriceWithDecimal', {}).get('price'),
+                    'airlines':airline['name'],
+                    'segments': []  
+                }
+                for slice_detail in flight.get('slices', []):
+                    for segment in slice_detail.get('segments', []):
+                        segment_details = {
+                            'depart_airport': segment.get('departInfo', {}).get('airport', {}).get('name'),
+                            'depart_code':segment.get('departInfo', {}).get('airport', {}).get('code'),
+                            'depart_time': segment.get('departInfo', {}).get('time', {}).get('dateTime'),
+                            'arrival_airport': segment.get('arrivalInfo', {}).get('airport', {}).get('name'),
+                            'arrival_code': segment.get('arrivalInfo', {}).get('airport', {}).get('code'),
+                            'arrival_time': segment.get('arrivalInfo', {}).get('time', {}).get('dateTime'),
+                            'duration': segment.get('duration')
+                        }
+                        flight_details['segments'].append(segment_details)
+                        break
+                flight_data.append(flight_details)
+
+        for flight in flight_data:
+            segment = flight['segments'][0]
+            flight.update(segment)  
+            del flight['segments']
+            print('before',flight['depart_time'])
+            print('after',flight['depart_time'][11:16])
+            flight['formatted_depart_time']=flight['depart_time'][11:16] 
+            flight['formatted_arrival_time']=flight['arrival_time'][11:16]  
+        # print("flight_data",flight_data)
+
+        # filtered_flights = [
+        #     flight for flight in flight_data
+        #     if flight['depart_code'] == destination_id and flight['arrival_code'] == origin_id
+        # ]
+        filtered_flights=flight_data
+
+        print(filtered_flights)
+        return render(request, 'flight_results.html', {'flights': filtered_flights})
+    else:
+        error_message = "There was a problem retrieving flight data. Please try again."
+        return render(request, 'flight_results.html', {'error_message': error_message})
 
 
 
