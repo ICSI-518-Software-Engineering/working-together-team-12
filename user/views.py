@@ -619,6 +619,7 @@ def hotel_detail(request, business_id):
     hotel = next((item for item in hotels if item['business_id'] == business_id), None)
     if hotel is None:
         raise Http404("Hotel does not exist")
+    print({'hotel': hotel, "business_id": business_id})
     return render(request, 'hotel_detail.html', {'hotel': hotel, "business_id": business_id})
 
 def book_hotel(request, business_id):
@@ -751,6 +752,8 @@ def restraunt_detail(request, business_id):
     restraunt = next((item for item in restraunts if item['business_id'] == business_id), None)
     if restraunt is None:
         raise Http404("restraunt does not exist")
+
+    # print({'restraunt': restraunt, 'business_id': business_id})
     return render(request, 'restraunt_detail.html', {'restraunt': restraunt, 'business_id': business_id})
 
 

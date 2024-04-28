@@ -1,118 +1,178 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form id="flight-form" action="{% url 'confirm_hotel_booking' %}" method="post" >
-    <h2 class="payment-portal-header">Booking  Confirmation</h2>
+<form id="flight-form" action="{% url 'confirm_hotel_booking' %}" method="post">
+    <h2 class="payment-portal-header">Booking Confirmation</h2>
 
-    <div class="row">
-        <div class="col-md">
-            <div class="container">
-                <div>
-                    
-                <p><strong>Hotel Name:</strong>{{ hotel.name }}
-                <p><strong>Hotel Address:</strong>{{ hotel.full_address }}
-                <p><strong>Hotel Contact Number:</strong>{{ hotel.phone_number }}
-                <p><strong>Rating:</strong>{{ hotel.rating }}
-                <p><strong>price:</strong><span id = "price"> $140 per day </span>
-                
-                
-                <input type="text" value = "{{ hotel.name }}" name = "hotel_name" hidden>
-                <input type="text" value = "{{ hotel.full_address }}" name = "full_address" hidden>
-                <input type="text" value = "{{ hotel.phone_number }}" name = "phone_number" hidden>
-                <input type="text" value = "{{ hotel.rating }}" name = "rating" hidden>
-        
-                </div>
-                <p><strong>From Date:</strong>
-                    <input type="date" id="from_date" name="from_date" required>
-                </p>
-                <p><strong>To Date:</strong>
-                    <input type="date" id="to_date" name="to_date"required>
-                </p>
-        
-                <p>Total Days: <span id="total_days"></span></p>
-                <input type="text"  name = "totaldays" id ="text_totaldays" hidden>
-        
-        
-                <p>Total cost: <span id="total_cost"></span></p>
-                <input type="text"  name = "totalcost" id ="text_totalcost" hidden>
-        
-        
-        
-            </div>
-        </div>
-        <div class="col-md">
-        
-            <div class="container"  id="container1">
-                <h2>Add customer Details</h2>
-                    {% csrf_token %}
-                    <div id="passengerContainer">
-                        <!-- Passenger fields will be added here -->
+    <div class="row" style="padding-left: 2rem;">
+        <div class="col">
+            <div class="container" style="max-width: none;">
+                <div class="card mb-3">
+                    <div class="row no-gutters">
+                        <div class="col-md-4 d-flex align-items-center justify-content-center">
+                            <img src="{{ hotel.photos_sample.0.photo_url }}" class="card-img" alt="Hotel Image"
+                                style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ hotel.name }}</h5>
+                                <p class="card-text"><strong>Hotel Address:</strong> {{ hotel.full_address }}</p>
+                                <p class="card-text"><strong>Hotel Contact Number:</strong> {{ hotel.phone_number }}</p>
+                                <p class="card-text"><strong>Rating:</strong> {{ hotel.rating }}</p>
+                            </div>
+                        </div>
                     </div>
-                    <button type="button" id="addPassengerBtn">Add Customer</button>
-                    <button type="button" id="nextBtn1">Next</button>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <div class="text-dark mb-0" style="font-size: large; font-weight: 600;">No. of Rooms</div>
+                        </div>
+                        <div class="input-group w-auto justify-content-end">
+                            <input type="button" value="-"
+                                class="button-minus border rounded-circle icon-shape icon-sm mx-1"
+                                data-field="quantity">
+                            <input type="number" step="1" min="1" max="10" value="1" id="rooms_quantity_field"
+                                name="rooms_quantity_field" class="quantity-field border-0 text-center w-25">
+                            <input type="button" value="+" class="button-plus border rounded-circle icon-shape icon-sm"
+                                data-field="quantity">
+                        </div>
+                    </div>
+                    <div id="rooms" style="border-bottom: 1px solid lightgray; padding-bottom: 1rem;">
+                        <!-- Room inputs will be dynamically generated here -->
+                    </div>
+                </div>
+
+                <div class="mb-3" style="border-bottom: 1px solid lightgray; padding-bottom: 1rem;">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <div class="text-dark mb-0" style="font-size: large; font-weight: 600;">No. of Guests</div>
+                        </div>
+
+                        <div class="input-group w-auto justify-content-end">
+                            <input type="button" value="-"
+                                class="button-minus border rounded-circle icon-shape icon-sm mx-1"
+                                id="guests_quantity_decrement" data-field="quantity">
+                            <input type="number" step="1" min="1" max="10" value="1" id="guests_quantity_field"
+                                name="guests_quantity_field" class="quantity-field border-0 text-center w-25">
+                            <input type="button" value="+" class="button-plus border rounded-circle icon-shape icon-sm"
+                                id="guests_quantity_increment" data-field="quantity">
+                        </div>
+
+                    </div>
+                </div>
+
+                <input type="text" value="{{ hotel.name }}" name="hotel_name" hidden>
+                <input type="text" value="{{ hotel.full_address }}" name="full_address" hidden>
+                <input type="text" value="{{ hotel.phone_number }}" name="phone_number" hidden>
+                <input type="text" value="{{ hotel.rating }}" name="rating" hidden>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="from_date"><strong>From Date:</strong></label>
+                            <input type="date" id="from_date" name="from_date" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="to_date"><strong>To Date:</strong></label>
+                            <input type="date" id="to_date" name="to_date" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <p><strong>Total Days:</strong> <span id="total_days"></span></p>
+                    <input type="text" name="totaldays" id="text_totaldays" hidden>
+                </div>
+
+                <div class="mb-3">
+                    <p><strong>Total cost:</strong> <span id="total_cost"></span></p>
+                    <input type="text" name="totalcost" id="text_totalcost" hidden>
+                </div>
             </div>
-        
-            <div class="container"  id="container2" style="display: none;">
-                <input type="text" id="totalprice" name="totalprice" value= 0 hidden/> 
+
+        </div>
+        <div class="col">
+
+            <div class="container" id="container1">
+                <h2>Add Guest Details</h2>
+                {% csrf_token %}
+                <div id="passengerContainer">
+                    <!-- Passenger fields will be added here -->
+                </div>
+                <button type="button" id="addPassengerBtn">Add Guest</button>
+                <button type="button" id="nextBtn1">Next</button>
+            </div>
+
+            <div class="container" id="container2" style="display: none;">
+                <input type="text" id="totalprice" name="totalprice" value=0 hidden />
                 <h2>Confirm Payment Method</h2>
                 <div class="custom-select-wrapper">
                     <select name="payment_method">
                         {% for option in payment_options %}
-                            <option value="{{ option.id }}">Card ending in {{ option.card_number|slice:"-4:" }}</option>
+                        <option value="{{ option.id }}">Card ending in {{ option.card_number|slice:"-4:" }}</option>
                         {% endfor %}
                     </select>
                 </div>
-        
+
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#paymentModal">
-                    Add Payment 
+                    Add Payment
                 </button>
                 <button type="button" id="backBtn2">Back</button>
-            <button type="button" id="nextBtn2">Next</button>
-        
+                <button type="button" id="nextBtn2">Next</button>
+
             </div>
-        
-            <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
+
+            <div class="modal fade" style="margin-right: 1rem;" id="paymentModal" tabindex="-1" role="dialog"
+                aria-labelledby="paymentModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="paymentModalLabel">New Payment Details</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="width: 10%;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                style="width: 10%;">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                                <div class="form-group">
-                                    <label for="cardNumber">Card Number:</label>
-                                    <input type="text" class="form-control" id="cardNumber" name="card_number" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="cardHolderName">Card Holder Name:</label>
-                                    <input type="text" class="form-control" id="cardHolderName" name="card_holder_name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="expiryDate">Expiry Date:</label>
-                                    <input type="month" class="form-control" id="expiryDate" name="expiry_date" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="cvv">CVV:</label>
-                                    <input type="text" class="form-control" id="cvv" name="cvv" required>
-                                </div>
-                                <div class="form-group form-check" >
-                                    <input type="checkbox" class="form-check-input" id="saveForFuture" name="save_for_future" style="visibility: visible;">
-                                    <label class="form-check-label" for="saveForFuture">Save for future use</label>
-                                </div>
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number:</label>
+                                <input type="text" class="form-control" id="cardNumber" name="card_number" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cardHolderName">Card Holder Name:</label>
+                                <input type="text" class="form-control" id="cardHolderName" name="card_holder_name"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label for="expiryDate">Expiry Date:</label>
+                                <input type="month" class="form-control" id="expiryDate" name="expiry_date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="cvv">CVV:</label>
+                                <input type="text" class="form-control" id="cvv" name="cvv" required>
+                            </div>
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" id="saveForFuture"
+                                    name="save_for_future" style="visibility: visible;">
+                                <label class="form-check-label" for="saveForFuture">Save for future use</label>
+                            </div>
                         </div>
-                        
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" form="newPaymentForm" id = "PaymentFormSubmit" >Save details</button>
+                            <button type="submit" class="btn btn-primary" form="newPaymentForm"
+                                id="PaymentFormSubmit">Save details</button>
                         </div>
                     </div>
                 </div>
             </div>
-        
-        
-            <div class="container"  id="container3" style="display: none;">
+
+
+            <div class="container" id="container3" style="display: none;">
                 <button type="submit" id="addPassengerBtn">Confirm Booking</button>
                 <button type="button" id="backBtn3">Back</button>
             </div>
@@ -120,8 +180,122 @@
     </div>
 
 </form>
+
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener('DOMContentLoaded', function () {
+        const roomsContainer = document.getElementById('rooms');
+        const quantityField = document.getElementById('rooms_quantity_field');
+
+        const fromDateInput = document.getElementById('from_date');
+        const toDateInput = document.getElementById('to_date');
+        const totalDaysSpan = document.getElementById('total_days');
+        const totalCostSpan = document.getElementById('total_cost');
+
+        const totalDaystext = document.getElementById('text_totaldays');
+        const totalCosttext = document.getElementById('text_totalcost');
+
+        function renderRooms() {
+            const quantity = quantityField.value;
+            roomsContainer.innerHTML = ''; // Clear previous rooms
+
+            for (let i = 0; i < quantity; i++) {
+                const roomNumber = i + 1;
+                const roomDiv = document.createElement('div');
+                roomDiv.classList.add('row', 'align-items-center', 'mt-2');
+
+                roomDiv.innerHTML = `
+                    <div class="col-md-8 d-flex align-items-center">
+                        <label for="room_type_${roomNumber}" class="form-label " style="flex-shrink: 0; margin-right: 3rem;"><strong>Room ${roomNumber} Type:</strong></label>
+                        <select class="form-control room-type" id="room_type_${roomNumber}" name="room_type_${roomNumber}">
+                            <option value="standard">Standard</option>
+                            <option value="deluxe">Deluxe</option>
+                            <option value="suite">Suite</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="price_${roomNumber}" class="form-label"><strong>Price:</strong></label>
+                        <span id="price_${roomNumber}" value="140" class="ml-2 room-price">$140 per day</span>
+                    </div>
+                `;
+
+                roomsContainer.appendChild(roomDiv);
+            }
+
+            async function calculateDays() {
+            const fromDate = fromDateInput.value;
+            const toDate = toDateInput.value;
+
+            let total_price = 0;
+            document.querySelectorAll('.room-price').forEach(priceSpan => {
+                total_price += parseInt(priceSpan.getAttribute('value'));
+            });
+
+            if (fromDate && toDate) {
+                const startDate = new Date(fromDate);
+                const endDate = new Date(toDate);
+                const timeDiff = endDate - startDate;
+                const daysDiff = Math.round(timeDiff / (1000 * 3600 * 24));
+
+                if (daysDiff >= 0) {
+                    totalDaysSpan.textContent = daysDiff;
+                    totalDaystext.value = daysDiff;
+                    totalCostSpan.textContent = daysDiff * total_price
+                    totalCosttext.value = daysDiff * total_price
+
+                } else {
+                    totalDaysSpan.textContent = 'Start date must be earlier than end date';
+                }
+            } else {
+                totalDaysSpan.textContent = ''; // Clear text if one or both dates are missing
+            }
+        }
+
+            // Reattach event listeners for room type select dropdowns
+            document.querySelectorAll('.room-type').forEach(roomTypeInput => {
+                roomTypeInput.addEventListener('change', function () {
+                    let price_per_day = "$140 per day";
+                    let price_per_day_value = 140;
+                    if (roomTypeInput?.value == "standard") {
+                        price_per_day = "$140 per day";
+                        price_per_day_value = 140;
+                    } else if (roomTypeInput?.value == "deluxe") {
+                        price_per_day = "$299 per day";
+                        price_per_day_value = 299;
+                    } else if (roomTypeInput?.value == "suite") {
+                        price_per_day = "$499 per day";
+                        price_per_day_value = 499;
+                    }
+                    const roomNumber = roomTypeInput.id.split('_')[2];
+                    document.getElementById(`price_${roomNumber}`).innerText = price_per_day;
+                    // document.getElementById(`price_${roomNumber}`).value = price_per_day_value;
+                    document.getElementById(`price_${roomNumber}`).setAttribute('value', price_per_day_value)
+                    calculateDays();
+                });
+            });
+        }
+
+        renderRooms(); // Render initial rooms
+
+        quantityField.addEventListener('change', renderRooms);
+
+        // Increment button
+        document.querySelector('.button-plus').addEventListener('click', function () {
+            quantityField.stepUp();
+            renderRooms();
+        });
+
+        // Decrement button
+        document.querySelector('.button-minus').addEventListener('click', function () {
+            quantityField.stepDown();
+            renderRooms();
+        });
+    });
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
         const container1 = document.getElementById("container1");
         const container2 = document.getElementById("container2");
         const container3 = document.getElementById("container3");
@@ -130,100 +304,180 @@
         const backBtn2 = document.getElementById("backBtn2");
         const backBtn3 = document.getElementById("backBtn3");
 
-        nextBtn1.addEventListener("click", function() {
+        nextBtn1.addEventListener("click", function () {
             container1.style.display = "none";
             container2.style.display = "block";
         });
 
-        nextBtn2.addEventListener("click", function() {
+        nextBtn2.addEventListener("click", function () {
             container2.style.display = "none";
             container3.style.display = "block";
         });
 
-        backBtn2.addEventListener("click", function() {
+        backBtn2.addEventListener("click", function () {
             container2.style.display = "none";
             container1.style.display = "block";
         });
 
-        backBtn3.addEventListener("click", function() {
+        backBtn3.addEventListener("click", function () {
             container3.style.display = "none";
             container2.style.display = "block";
         });
     });
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         var passengerContainer = document.getElementById('passengerContainer');
         var addPassengerBtn = document.getElementById('addPassengerBtn');
+        const quantityField = document.getElementById('guests_quantity_field');
 
         var index = 0; // Initialize a counter outside the event listener
-        var total_passengers = 0; 
+        var total_passengers = 0;
 
-        addPassengerBtn.addEventListener('click', function() {
-    var newFieldSet = document.createElement('fieldset');
-    newFieldSet.innerHTML = `
-        <legend>Customer</legend>
-        <label for="fname_${index}">First Name:</label>
-        <input type="text" name="fname_${index}" id="fname_${index}" required>
-        <label for="lname_${index}">Last Name:</label>
-        <input type="text" name="lname_${index}" id="lname_${index}" required>
-        <label for="age_${index}">Age:</label>
-        <input type="number" name="age_${index}" id="age_${index}" required>
-        <label for="dl_number_${index}">D/L Number:</label>
-        <input type="text" name="dl_number_${index}" id="dl_number_${index}" required>
-        <button type="button" class="removePassengerBtn">Remove</button>
-    `;
-    total_passengers++;
-    document.getElementById('totalprice').value =  total_passengers * parseFloat(document.getElementById('price').innerText);
-    passengerContainer.appendChild(newFieldSet);
+        function addGuest() {
+            var newFieldSet = document.createElement('fieldset');
+            newFieldSet.innerHTML = `
+                <legend>Guest ${index + 1}</legend>
+                <div class="row">
+                    
+                    <div class="form-group col">
+                        <label for="fname_${index}">First Name:</label>
+                        <input type="text" name="fname_${index}" id="fname_${index}" class="form-control" required>
+                    </div>
+                    <div class="form-group col">
+                        <label for="lname_${index}">Last Name:</label>
+                        <input type="text" name="lname_${index}" id="lname_${index}" class="form-control" required>
+                    </div>
+                    </div>
+                    <div class="row">
+                <div class="form-group col">
+                    <label for="age_${index}">Age:</label>
+                    <input type="number" name="age_${index}" id="age_${index}" class="form-control" required>
+                </div>
+                <div class="form-group col">
+                    <label for="dl_number_${index}">ID Proof (SSN / DL no.):</label>
+                    <input type="text" name="dl_number_${index}" id="dl_number_${index}" class="form-control" required>
+                </div>
+                    </div>
+                <button type="button" class="btn btn-danger removePassengerBtn">Remove</button>
+            `;
 
-    // Add remove functionality
-    newFieldSet.querySelector('.removePassengerBtn').addEventListener('click', function() {
-        passengerContainer.removeChild(newFieldSet);
-        total_passengers--;
-        document.getElementById('totalprice').value =  total_passengers * parseFloat(document.getElementById('price').innerText);
-    });
-    index++; // Increment the index each time a new passenger is added
-});
-
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-    const fromDateInput = document.getElementById('from_date');
-    const toDateInput = document.getElementById('to_date');
-    const totalDaysSpan = document.getElementById('total_days');
-    const totalCostSpan = document.getElementById('total_cost');
-
-    const totalDaystext = document.getElementById('text_totaldays');
-    const totalCosttext = document.getElementById('text_totalcost');
+            total_passengers++;
 
 
-    function calculateDays() {
-        const fromDate = fromDateInput.value;
-        const toDate = toDateInput.value;
-        if (fromDate && toDate) {
-            const startDate = new Date(fromDate);
-            const endDate = new Date(toDate);
-            const timeDiff = endDate - startDate;
-            const daysDiff = Math.round(timeDiff / (1000 * 3600 * 24));
 
-            if (daysDiff >= 0) {
-                totalDaysSpan.textContent = daysDiff;
-                totalDaystext.value = daysDiff;
-                totalCostSpan.textContent = daysDiff * 140
-                totalCosttext.value = daysDiff * 140
+            passengerContainer.appendChild(newFieldSet);
 
-            } else {
-                totalDaysSpan.textContent = 'Start date must be earlier than end date';
-            }
-        } else {
-            totalDaysSpan.textContent = ''; // Clear text if one or both dates are missing
+            // Add remove functionality
+            newFieldSet.querySelector('.removePassengerBtn').addEventListener('click', function () {
+                passengerContainer.removeChild(newFieldSet);
+                total_passengers--;
+            });
+            index++; // Increment the index each time a new passenger is added
         }
-    }
 
-    fromDateInput.addEventListener('change', calculateDays);
-    toDateInput.addEventListener('change', calculateDays);
-});
+        function removeGuest() {
+            var lastGuest = passengerContainer.lastElementChild;
+            console.log("🚀 ~ removeGuest ~ lastGuest:", lastGuest)
+            if (lastGuest) {
+                passengerContainer.removeChild(lastGuest);
+                total_passengers--;
+                index--;
+            }
+        }
 
-document.getElementById('PaymentFormSubmit').addEventListener('click', function(event) {
+        // let total_price = 0;
+        //     document.querySelectorAll('.room-price').forEach(priceSpan => {
+        //         total_price = total_price + parseInt(priceSpan.getAttribute('value'));
+        //     });
+        //     document.getElementById('text_totalcost').value = total_passengers * total_price;
+        //     document.getElementById('total_cost').textContent = total_passengers * total_price;
+
+        addGuest();
+        addPassengerBtn.addEventListener('click', addGuest);
+
+        // Increment button
+        document.getElementById('guests_quantity_increment').addEventListener('click', function () {
+            quantityField.stepUp();
+            addGuest();
+        });
+
+        // Decrement button
+        document.getElementById('guests_quantity_decrement').addEventListener('click', function () {
+            if (quantityField.value > 1) {
+                quantityField.stepDown();
+                removeGuest();
+            }
+        });
+
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const fromDateInput = document.getElementById('from_date');
+        const toDateInput = document.getElementById('to_date');
+        const totalDaysSpan = document.getElementById('total_days');
+        const totalCostSpan = document.getElementById('total_cost');
+
+        const totalDaystext = document.getElementById('text_totaldays');
+        const totalCosttext = document.getElementById('text_totalcost');
+
+        //To restrict past date
+        var date = new Date().toISOString().slice(0, 10);
+
+        $('#from_date').attr('min', date);
+        $('#to_date').attr('min', date);
+
+        fromDateInput.addEventListener("change", function () {
+            if (fromDateInput?.value) {
+                $('#to_date').attr('min', fromDateInput?.value);
+            } else {
+                $('#to_date').attr('min', date);
+            }
+        });
+
+        // document.querySelectorAll('rooms_quantity_field').addEventListener('change', async function () {
+        //     calculateDays();
+        // })
+
+        // Reattach event listeners for room type select dropdowns
+        document.querySelectorAll('.room-type').forEach(roomTypeInput => {
+            roomTypeInput.addEventListener('change', function () {
+                calculateDays();
+            });
+        });
+
+        async function calculateDays() {
+            const fromDate = fromDateInput.value;
+            const toDate = toDateInput.value;
+
+            let total_price = 0;
+            document.querySelectorAll('.room-price').forEach(priceSpan => {
+                total_price += parseInt(priceSpan.getAttribute('value'));
+            });
+
+            if (fromDate && toDate) {
+                const startDate = new Date(fromDate);
+                const endDate = new Date(toDate);
+                const timeDiff = endDate - startDate;
+                const daysDiff = Math.round(timeDiff / (1000 * 3600 * 24));
+
+                if (daysDiff >= 0) {
+                    totalDaysSpan.textContent = daysDiff;
+                    totalDaystext.value = daysDiff;
+                    totalCostSpan.textContent = daysDiff * total_price
+                    totalCosttext.value = daysDiff * total_price
+
+                } else {
+                    totalDaysSpan.textContent = 'Start date must be earlier than end date';
+                }
+            } else {
+                totalDaysSpan.textContent = ''; // Clear text if one or both dates are missing
+            }
+        }
+
+        fromDateInput.addEventListener('change', calculateDays);
+        toDateInput.addEventListener('change', calculateDays);
+    });
+
+    document.getElementById('PaymentFormSubmit').addEventListener('click', function (event) {
         event.preventDefault(); // Prevent the default form submission
 
         // Get the payment details
@@ -232,27 +486,27 @@ document.getElementById('PaymentFormSubmit').addEventListener('click', function(
         var expiryDate = document.getElementById('expiryDate').value;
         var cvv = document.getElementById('cvv').value;
         var saveForFuture = document.getElementById('saveForFuture').checked;
-        
+
         // Simulate saving the data and getting an ID for the payment method
         // var paymentMethodId = 'newId'; // Replace with actual ID from the server response
         var paymentMethodId = cardNumber.slice(-4);
 
         // Assuming the card number is unique and can be used as part of the option text
         var cardLastFourDigits = cardNumber.slice(-4);
-        
+
         // Add a new option to the payment_method select
         var paymentMethodSelect = document.querySelector('select[name="payment_method"]');
         var newOption = new Option('Card ending in ' + cardLastFourDigits, paymentMethodId, true, true);
         paymentMethodSelect.add(newOption);
         console.log("🚀 ~ document.getElementById ~ paymentMethodSelect:", paymentMethodSelect)
-        
+
 
         // Close the modal
-            $('#paymentModal').modal('hide');
+        $('#paymentModal').modal('hide');
 
         // // Optionally, clear the form fields
         // document.getElementById('newPaymentForm').reset();
-        
+
         // Handle actual form submission here if needed, e.g., via AJAX
     });
 
@@ -265,26 +519,27 @@ document.getElementById('PaymentFormSubmit').addEventListener('click', function(
 
 <style>
     #passengerContainer fieldset {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 10px;
-    display: flex;
-    width: 100%;
-    flex-flow: column;
-    gap: 10px;
-}
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+        display: flex;
+        width: 100%;
+        flex-flow: column;
+        gap: 10px;
+    }
 
-.removePassengerBtn {
-    margin-top: 10px;
-    background-color: #f44336;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-}
+    .removePassengerBtn {
+        margin-top: 10px;
+        background-color: #f44336;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
     .container {
         max-width: 600px;
         margin: 3px auto;
@@ -317,14 +572,15 @@ document.getElementById('PaymentFormSubmit').addEventListener('click', function(
         margin-top: 20px;
     }
 
-    select, button {
+    select,
+    button {
         width: 100%;
         padding: 10px;
         margin-top: 10px;
         border: 1px solid #ccc;
         border-radius: 4px;
         background-color: #f8f8f8;
-        box-sizing: border-box; 
+        box-sizing: border-box;
     }
 
     button {
@@ -337,6 +593,7 @@ document.getElementById('PaymentFormSubmit').addEventListener('click', function(
     button:hover {
         background-color: #45a049;
     }
+
     .payment-portal-header {
         text-align: center;
         font-size: 28px;
@@ -363,20 +620,33 @@ document.getElementById('PaymentFormSubmit').addEventListener('click', function(
     }
 
 
+    icon-shape {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .icon-sm {
+        width: 2rem;
+        height: 2rem;
+
+    }
 
 
+    button {
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
 
-button {
-    background-color: #4CAF50;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
+    button:hover {
+        background-color: #45a049;
+    }
 
-button:hover {
-    background-color: #45a049;
-}
-.custom-select-wrapper {
+    .custom-select-wrapper {
         position: relative;
         display: inline-block;
         width: 100%;
@@ -389,20 +659,23 @@ button:hover {
         padding: 10px;
         border: 1px solid #ccc;
         border-radius: 4px;
-        appearance: none; 
-        -webkit-appearance: none; /* For Safari */
-        -moz-appearance: none; /* For Firefox */
+        appearance: none;
+        -webkit-appearance: none;
+        /* For Safari */
+        -moz-appearance: none;
+        /* For Firefox */
         background-color: #f8f8f8;
     }
 
     /* Creating the custom arrow */
     .custom-select-wrapper::after {
-        content: '▼'; /* Dropdown arrow */
+        content: '▼';
+        /* Dropdown arrow */
         position: absolute;
         top: 50%;
         right: 15px;
         transform: translateY(-50%);
-        pointer-events: none; 
+        pointer-events: none;
         color: #333;
         font-size: 12px;
     }
