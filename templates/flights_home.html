@@ -8,10 +8,13 @@
             {% csrf_token %}
             <div class="route-inputs d-flex align-items-center justify-content-between">
                 <input type="text" id="origin" name="origin" placeholder="Origin" class="form-control" style="max-width: 300px;">
-                <ul id="origin-results" class="results-list list-group"></ul> 
+                <ul id="origin-results" style="display: none;" class="results-list list-group"></ul> 
+
                 <span class="swap-icon fa fa-exchange-alt" onclick="swapValues();"></span>
                 <input type="text" id="destination" name="destination" placeholder="Destination" class="form-control" style="max-width: 300px;">
-                <ul id="origin-results" style="display:hidden;"class="results-list list-group"></ul> 
+                
+                <ul id="destination-results" style="display:none;"class="results-list list-group"></ul> 
+                
                 <input type="date" id="departure_date" name="departure_date" class="form-control" style="margin-left: 6px;margin-right: 3px;">
                 <select id="class_type" name="class_type" class="form-control" style="margin-left: 3px;margin-right: 3px;">
                     <option value="ECO">Economy</option>
@@ -23,9 +26,9 @@
                     <label for="sort_order" style="font-size: 15px; font-weight: bold; font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">Sort by:</label>    
                     <select id="sort_order" name="sort_order">
                         <option value="PRICE">Price</option>
-                        <option value="DEPARTURE">Departure Time</option>
-                        <option value="ARRIVAL">Arrival Time</option>
-                        <option value="DURATION">Duration</option>
+                        <option value="DEPARTTIME">Departure Time</option>
+                        <option value="ARRIVETIME">Arrival Time</option>
+                        <option value="TRAVELTIME">Duration</option>
                     </select>
                 </div>
             </div>
@@ -63,6 +66,56 @@
 
 
 <style>
+    #origin-results {
+        position: absolute;
+        width: 217px;
+        top: 40px;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 5px;
+        list-style: none;
+        padding-left: 0;
+        max-height: 150px;
+        overflow-y: auto;
+        z-index: 100;
+    }
+
+    #destination-results {
+        position: absolute;
+        width: 217px;
+        top: 40px;
+        left: 325px;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 5px;
+        list-style: none;
+        padding-left: 0;
+        max-height: 150px;
+        overflow-y: auto;
+        z-index: 100;
+    }
+
+    #origin-results li, #destination-results li {
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    #origin-results li:hover, #destination-results li:hover {
+        background-color: #f2f2f2;
+    }
+
+    #origin-results {
+        padding: 10px;
+        border-radius: 20px;
+        border: 1px solid #ced4da;
+        background-color: rgba(255,255,255,0.7);
+        margin-right: 10px; 
+    }
 
 #flights_home {
     background-image: url("/static/Flights_c.jpg");
@@ -163,6 +216,56 @@
 }
 
 </style>
+
+<script>
+    document.getElementById('origin').addEventListener('input', function() {
+    const value = this.value;
+    fetch(`/search-airports/?term=${value}`)
+        .then(response => response.json())
+        .then(data => {
+            const ul = document.getElementById('origin-results');
+            if (data.length > 0) {
+                ul.innerHTML = '';  
+                data.slice(0, 5).forEach(city => {  // Limit to 5 results
+                    const li = document.createElement('li');
+                    li.textContent = `${city.locid}`;
+                    ul.appendChild(li);
+                    li.onclick = function() {
+                        document.getElementById('origin').value = this.textContent;
+                        ul.style.display = 'none'; 
+                    };
+                });
+                ul.style.display = 'block';  
+            } else {
+                ul.style.display = 'none'; 
+            }
+        });
+});
+
+document.getElementById('destination').addEventListener('input', function() {
+    const value = this.value;
+    fetch(`/search-airports/?term=${value}`)
+        .then(response => response.json())
+        .then(data => {
+            const ul = document.getElementById('destination-results');
+            if (data.length > 0) {
+                ul.innerHTML = '';  
+                data.slice(0, 5).forEach(city => {  // Limit to 5 results
+                    const li = document.createElement('li');
+                    li.textContent = `${city.locid}`;
+                    ul.appendChild(li);
+                    li.onclick = function() {
+                        document.getElementById('destination').value = this.textContent;
+                        ul.style.display = 'none'; 
+                    };
+                });
+                ul.style.display = 'block';  
+            } else {
+                ul.style.display = 'none'; 
+            }
+        });
+});
+</script>
 {% endblock %}
 
 {% block extra_js %}

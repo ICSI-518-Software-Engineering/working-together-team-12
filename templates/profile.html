@@ -3,47 +3,57 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="profile-main">
+<div class="tab-container">
+<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'Profile')">Profile</button>
+    <button class="tablinks" onclick="openTab(event, 'PaymentDetails')">Payment Details</button>
+    <button class="tablinks" onclick="openTab(event, 'AddPayment')">Add Payment</button>
+  </div>
+
+  <div id="Profile" class="tabcontent">
     <div class="profile-container">
-        <h2>Edit Profile</h2>
     
     <form id="profileForm" method="POST" enctype="multipart/form-data" class="profile-form">
+        
         <div class="form-group">
             <label for="profileImage">Profile Image:</label>
             {% if user_profile.profile_pic %}
-                <img src="{{ user_profile.profile_pic.url }}" alt="Current Profile Pic" height="100">
+                <img src="{{ user_profile.profile_pic.url }}" alt="Current Profile Pic" class="profile-pic">
+                <input type="file" id="profileImage" name="profileImage" class="file-input">
+            {% else %}
+                <div class="no-image">
+                    Upload Picture
+                    <input type="file" id="profileImage" name="profileImage" class="file-input">
+                </div>
             {% endif %}
-            <input type="file" id="profileImage" name="profileImage">
         </div>
+
         <input type="text" style="display: none;"   id="form-type" name="type" value="profileForm">
-    
-        <div class="form-group">
-            <label for="firstName">First Name:</label>
-            <input type="text" id="firstName" name="firstName" required value="{{ user_profile.name|default_if_none:'' }}">
-        </div>
-        <div class="form-group">
-            <label for="lastName">Last Name:</label>
-            <input type="text" id="lastName" name="lastName" required value="{{ user_profile.lname|default_if_none:'' }}">
-        </div>
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required value="{{ user_profile.email|default_if_none:'' }}">
-        </div>
-        <div class="form-group" id="addressGroup">
-            <label>Address:</label>
-            <input type="text" id="flatDetails" name="flatDetails" placeholder="Flat No" required value="{{ user_profile.address|default_if_none:'' }}">
-            <input type="text" id="line1" name="line1" placeholder="Line 1" value="{{ user_profile.line1|default_if_none:'' }}">
-            <input type="text" id="line2" name="line2" placeholder="Line 2" value="{{ user_profile.line2|default_if_none:'' }}">
-            <div class="form-row">
-                <div class="form-group half-width">
-                    <input type="text" id="state" name="state" placeholder="State" required value="{{ user_profile.state|default_if_none:'' }}">
-                </div>
-                <div class="form-group half-width">
-                    <input type="text" id="country" name="country" placeholder="Country" required value="{{ user_profile.country|default_if_none:'' }}">
-                </div>
+        <div class="form-row">
+            <div class="form-group half-width">
+                <label for="firstName">First Name <span class="required-mark">(*) : </span> </label>
+                <input type="text" id="firstName" name="firstName" required value="{{ user_profile.name|default_if_none:'' }}">
             </div>
+
+            <div class="form-group half-width">
+                <label for="middleName">Middle Name:</label>
+                <input type="text" id="middleName" name="middleName" required value="{{ user_profile.mname|default_if_none:'' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name <span class="required-mark">(*) : </span></label>
+                <input type="text" id="lastName" name="lastName" required value="{{ user_profile.lname|default_if_none:'' }}">
+            </div>
+
         </div>
-        <div class="form-group">
+        
+        <div class="form-row">
+            <div class="form-group half-width">
+                <label for="email">Email <span class="required-mark">(*) : </span></label>
+                <input type="email" id="email" name="email" required value="{{ user_profile.email|default_if_none:'' }}">
+            </div>
+        
+        <div class="form-group half-width">
             <label>Phone:</label>
             <div class="phno_content">
                 <div class="countryCode">
@@ -57,87 +67,244 @@
                 </div>
             </div>
         </div>
+    </div>
+        <div class="form-group" id="addressGroup">
+            <label>Address:</label>
+            <input type="text" id="flatDetails" name="flatDetails" placeholder="Flat No"  value="{{ user_profile.address|default_if_none:'' }}">
+            <input type="text" id="line1" name="line1" placeholder="Line 1" value="{{ user_profile.line1|default_if_none:'' }}">
+            <input type="text" id="line2" name="line2" placeholder="Line 2" value="{{ user_profile.line2|default_if_none:'' }}">
+            <div class="form-row">
+                
+                <div class="form-group half-width">
+                    <input type="text" id="city" name="city" placeholder="City" required value="{{ user_profile.city|default_if_none:'' }}">
+                </div>
+
+                <div class="form-group half-width">
+                    <input list = "states" id="state" name="state" placeholder="State" required value="{{ user_profile.state|default_if_none:'' }}">
+                    <datalist id="states">
+                        <option value="Alabama"></option>
+                        <option value="Alaska"></option>
+                        <option value="Arizona"></option>
+                        <option value="Arkansas"></option>
+                        <option value="California"></option>
+                        <option value="Colorado"></option>
+                        <option value="Connecticut"></option>
+                        <option value="Delaware"></option>
+                        <option value="Florida"></option>
+                        <option value="Georgia"></option>
+                        <option value="Hawaii"></option>
+                        <option value="Idaho"></option>
+                        <option value="Illinois"></option>
+                        <option value="Indiana"></option>
+                        <option value="Iowa"></option>
+                        <option value="Kansas"></option>
+                        <option value="Kentucky"></option>
+                        <option value="Louisiana"></option>
+                        <option value="Maine"></option>
+                        <option value="Maryland"></option>
+                        <option value="Massachusetts"></option>
+                        <option value="Michigan"></option>
+                        <option value="Minnesota"></option>
+                        <option value="Mississippi"></option>
+                        <option value="Missouri"></option>
+                        <option value="Montana"></option>
+                        <option value="Nebraska"></option>
+                        <option value="Nevada"></option>
+                        <option value="New Hampshire"></option>
+                        <option value="New Jersey"></option>
+                        <option value="New Mexico"></option>
+                        <option value="New York"></option>
+                        <option value="North Carolina"></option>
+                        <option value="North Dakota"></option>
+                        <option value="Ohio"></option>
+                        <option value="Oklahoma"></option>
+                        <option value="Oregon"></option>
+                        <option value="Pennsylvania"></option>
+                        <option value="Rhode Island"></option>
+                        <option value="South Carolina"></option>
+                        <option value="South Dakota"></option>
+                        <option value="Tennessee"></option>
+                        <option value="Texas"></option>
+                        <option value="Utah"></option>
+                        <option value="Vermont"></option>
+                        <option value="Virginia"></option>
+                        <option value="Washington"></option>
+                        <option value="West Virginia"></option>
+                        <option value="Wisconsin"></option>
+                        <option value="Wyoming"></option>
+                    </datalist>
+                </div>
+                
+                
+                
+                <div class="form-group half-width">
+                    <input type="text" id="zipcode" name="zipcode" placeholder="Zip Code" required value="{{ user_profile.zipcode|default_if_none:'' }}">
+                </div>
+            </div>
+        </div>
+        
         <button type="button" id="updateProfileBtn" class="update-btn">Update Profile</button>
     </form>
     
-    
-        <h3>Add Payment Detail</h3>
-        <form id="paymentForm" method="POST" class="payment-form">
-            <div class="form-group">
-                <label for="cardNumber">Card Number:</label>
-                <input type="text" id="card_number" name="cardNumber" value="{{ payment_details.card_number|default:'' }}" required>
-            </div>
-        <input type="text" style="display: none;" id="form-type1" name="type" value="paymentForm">
-    
-            <div class="form-group">
-                <label for="cvv">CVV:</label>
-                <input type="password" id="cvv" name="cvv" value="{{ payment_details.cvv|default:'' }}" required>
-            </div>
-            <div class="form-group">
-                <label for="cardHolderName">Card Holder Name:</label>
-                <input type="text" id="card_holder_name" name="cardHolderName" value="{{ payment_details.card_holder_name|default:'' }}" required>
-            </div>
-            <div class="form-group">
-                <label for="expiryMonth">Expiry Month:</label>
-                <select id="expiry_month" name="expiryMonth" required>
-                    <option value="1">1</option>
-                    <script>
-                        const selectedMonth = "{{ payment_details.expiry_month|default_if_none:'' }}"; 
-                        
-                        for (let i = 2; i <= 12; i++) {
-                            // Check if current iteration matches the selectedMonth
-                            const isSelected = i.toString() === selectedMonth;
-                            document.write(`<option value="${i}" ${isSelected ? 'selected' : ''}>${i}</option>`);
-                        }
-                    </script>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="expiryYear">Expiry Year:</label>
-                <select id="expiry_year" name="expiryYear" required>
-                    <option value="2024">2024</option>
-                    <script>
-                        const selectedYear = "{{ payment_details.expiry_year|default_if_none:'' }}"; 
-                        
-                        const currentYear = 2024;
-                        for (let i = currentYear+1; i <= currentYear + 20; i++) {
-                            const isSelected = i.toString() === selectedYear;
-                            document.write(`<option value="${i}" ${isSelected ? 'selected' : ''}>${i}</option>`);
-                        }
-                    </script>
-                </select>
-            </div>
-            <button type="button" id="addPaymentBtn" class="add-payment-btn">Add Payment</button>
-        </form>
-        
-    
-        <div class="payment-details-card">
-            <h3 class="payment-details-header">Payment Details</h3>
-            <ul class="payment-details-list">
-                {% for payment_detail in user.userprofile.payment_details.all %}
-                <li class="payment-detail-item">
-                    <strong>Card Holder Name:</strong> {{ payment_detail.card_holder_name }}
-                    <strong>Card Number:</strong> **** **** **** {{ payment_detail.card_number|slice:"-4:" }}
-                    <strong>Expiry Date:</strong> {{ payment_detail.expiry_date|date:"m/Y" }}
-                    <form method="post" action="{% url 'delete_payment_info' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="payment_detail_card_number" value="{{ payment_detail.card_number }}">
-                        <button type="submit" class="remove-card-btn">Remove Card</button>
-                    </form>
-                </li>
-                {% empty %}
-                <li class="no-payment">No payment details added.</li>
-                {% endfor %}
-            </ul>
-        </div>
+  </div>
+  </div>
+  
+  <div id="PaymentDetails" class="tabcontent">
+    <!-- Content of payment-details-card -->
+    <!-- Embed your payment details here -->
+    <div class="payment-details-card">
+        <!-- <h3 class="payment-details-header">Payment Details</h3> -->
+        <ul class="payment-details-list">
+            {% for payment_detail in user.userprofile.payment_details.all %}
+            <li class="payment-detail-item">
+                <strong>Card Holder Name:</strong> {{ payment_detail.card_holder_name }}
+                <strong>Card Number:</strong> **** **** **** {{ payment_detail.card_number|slice:"-4:" }}
+                <strong>Expiry Date:</strong> {{ payment_detail.expiry_date|date:"m/Y" }}
+                <form method="post" action="{% url 'delete_payment_info' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="payment_detail_card_number" value="{{ payment_detail.card_number }}">
+                    <button type="submit" class="remove-card-btn">Remove Card</button>
+                </form>
+            </li>
+            {% empty %}
+            <li class="no-payment">No payment details added.</li>
+            {% endfor %}
+        </ul>
     </div>
+  </div>
+  
+  <div id="AddPayment" class="tabcontent">
+    <!-- Content of paymentForm -->
+    <!-- Embed your payment form here -->
+    <form id="paymentForm" method="POST" class="payment-form">
+        <div class="form-group">
+            <label for="cardNumber">Card Number:</label>
+            <input type="text" id="card_number" name="cardNumber" value="{{ payment_details.card_number|default:'' }}" required>
+        </div>
+    <input type="text" style="display: none;" id="form-type1" name="type" value="paymentForm">
+
+        <div class="form-group">
+            <label for="cvv">CVV:</label>
+            <input type="password" id="cvv" name="cvv" value="{{ payment_details.cvv|default:'' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="cardHolderName">Card Holder Name:</label>
+            <input type="text" id="card_holder_name" name="cardHolderName" value="{{ payment_details.card_holder_name|default:'' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="expiryMonth">Expiry Month:</label>
+            <select id="expiry_month" name="expiryMonth" required>
+                <option value="1">1</option>
+                <script>
+                    const selectedMonth = "{{ payment_details.expiry_month|default_if_none:'' }}"; 
+                    
+                    for (let i = 2; i <= 12; i++) {
+                        // Check if current iteration matches the selectedMonth
+                        const isSelected = i.toString() === selectedMonth;
+                        document.write(`<option value="${i}" ${isSelected ? 'selected' : ''}>${i}</option>`);
+                    }
+                </script>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="expiryYear">Expiry Year:</label>
+            <select id="expiry_year" name="expiryYear" required>
+                <option value="2024">2024</option>
+                <script>
+                    const selectedYear = "{{ payment_details.expiry_year|default_if_none:'' }}"; 
+                    
+                    const currentYear = 2024;
+                    for (let i = currentYear+1; i <= currentYear + 20; i++) {
+                        const isSelected = i.toString() === selectedYear;
+                        document.write(`<option value="${i}" ${isSelected ? 'selected' : ''}>${i}</option>`);
+                    }
+                </script>
+            </select>
+        </div>
+        <button type="button" id="addPaymentBtn" class="add-payment-btn">Add Payment</button>
+    </form>
+  </div>
+
 </div>
-
-
 <style>
+    /* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 15px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+   .profile-pic {
+    width: 100px; /* or any size you want */
+    height: 100px; /* must be the same as width to maintain aspect ratio */
+    border-radius: 50%; /* makes the image round */
+    object-fit: cover; /* ensures the image covers the space without distorting */
+}
+
+.no-image {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%; /* also round */
+    background-color: #f0f0f0; /* a light gray background for the no image area */
+    color: #666; /* text color */
+    font-size: 14px;
+    border: 1px solid #ccc; /* optional: adds a subtle border */
+    position: relative; /* Needed to position the file input correctly */
+}
+
+.file-input {
+    opacity: 0; /* Makes the actual file input invisible */
+    width: 100px; /* Full width of the no-image div */
+    height: 100px; /* Full height of the no-image div */
+    position: absolute; /* Position it over the no-image div */
+    cursor: pointer; /* Cursor changes to pointer to indicate it's clickable */
+    border-radius: 50%; /* Maintains the round shape */
+}
+
+.file-input:hover + .no-image {
+    background-color: #e0e0e0; /* Optional: change background on hover */
+}
+
+    .required-mark {
+    color: red;  /* Makes the asterisk red */
+    font-weight: bold;  /* Optionally make it bold */
+}
     .profile-main{
-        background-image: url("/static/profile_bg.jpg");
-        max-height: 600px;
+        /* background-image: url("/static/profile_bg.jpg"); */
+        /* max-height: 600px; */
         overflow-y: auto;
     }
     .form-row {
@@ -188,6 +355,9 @@
         text-align: center;
         margin-bottom: 20px;
     }
+    .top-heading {
+        text-align: center;
+    }
     .card-number {
         letter-spacing: 2px;
     }
@@ -233,6 +403,14 @@
         list-style-type: none;
         padding: 0;
     }
+    input[list="states"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding and border in the width */
+}
+
     .payment-details-list li {
         margin-bottom: 10px;
         background-color: #f2f2f2;
@@ -300,7 +478,7 @@
         border-radius: 5px;
     }
     .profile-container {
-        max-width: 800px;
+        /* max-width: 800px; */
         margin: auto;
         padding: 20px;
         border-radius: 8px;
@@ -373,6 +551,54 @@
     flex-basis: calc(50% - 20px); /* Adjust based on form size */
 }
 
+.tab-container {
+    display: flex; /* Use flexbox to align tabs and content side by side */
+    width: 100%; /* Full width of the container */
+    height: 90%;
+}
+
+/* Style the tab section */
+.tab {
+    flex: 1; /* The tabs take up 1 part */
+    max-width: 150px; /* Maximum width of the tabs column */
+    height: 100%; /* Full height view */
+    border-right: 1px solid #ccc; /* Border to separate from content */
+    background-color: #f1f1f1; /* Background color for tabs */
+    font-size: 12px;
+}
+
+/* Style for each tab link */
+.tab button {
+    display: block; /* Stack the buttons vertically */
+    background-color: inherit; /* Inherits from the tab class */
+    color: black;
+    padding: 22px 16px;
+    width: 100%; /* Each button takes full width of the tab container */
+    border: none;
+    outline: none;
+    text-align: left; /* Align text to the left */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Hover effect for buttons */
+.tab button:hover {
+    background-color: #ddd; /* Light grey background on hover */
+}
+
+/* Active tab link styling */
+.tab button.active {
+    background-color: #ccc; /* Different background for active state */
+}
+
+/* Style for the content area */
+.tabcontent {
+    flex: 3; /* Content takes more space than tabs */
+    padding: 20px; /* Padding inside the content area */
+    overflow: auto; /* In case of overflow, show scrollbars */
+}
+
+
 /* Adjustments for small screens */
 @media (max-width: 768px) {
     .form-row {
@@ -395,16 +621,107 @@
     .payment-form .form-group {
         flex-basis: 100%; /* Full width on small screens */
     }
+    /* Container holding the tabs and tab content */
+/* Container for the entire tab interface */
+
+
 }
 
 </style>
 <script>
+    function openTab(evt, tabName) {
+  // Declare all variables
+  var i, tabcontent, tablinks;
+
+  // Get all elements with class="tabcontent" and hide them
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Get all elements with class="tablinks" and remove the class "active"
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Show the current tab, and add an "active" class to the button that opened the tab
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+
+// Optionally add this to auto-open the first tab on page load:
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementsByClassName("tablinks")[0].click();
+});
+
+
     document.addEventListener("DOMContentLoaded", function() {
         function clearPreviousErrors() {
             document.querySelectorAll('.error-message').forEach(function(message) {
                 message.remove();
             });
         }
+
+        const states = [
+        { abbr: "AL", name: "Alabama" },
+        { abbr: "AK", name: "Alaska" },
+        { abbr: "AZ", name: "Arizona" },
+        { abbr: "AR", name: "Arkansas" },
+        { abbr: "CA", name: "California" },
+        { abbr: "CO", name: "Colorado" },
+        { abbr: "CT", name: "Connecticut" },
+        { abbr: "DE", name: "Delaware" },
+        { abbr: "FL", name: "Florida" },
+        { abbr: "GA", name: "Georgia" },
+        { abbr: "HI", name: "Hawaii" },
+        { abbr: "ID", name: "Idaho" },
+        { abbr: "IL", name: "Illinois" },
+        { abbr: "IN", name: "Indiana" },
+        { abbr: "IA", name: "Iowa" },
+        { abbr: "KS", name: "Kansas" },
+        { abbr: "KY", name: "Kentucky" },
+        { abbr: "LA", name: "Louisiana" },
+        { abbr: "ME", name: "Maine" },
+        { abbr: "MD", name: "Maryland" },
+        { abbr: "MA", name: "Massachusetts" },
+        { abbr: "MI", name: "Michigan" },
+        { abbr: "MN", name: "Minnesota" },
+        { abbr: "MS", name: "Mississippi" },
+        { abbr: "MO", name: "Missouri" },
+        { abbr: "MT", name: "Montana" },
+        { abbr: "NE", name: "Nebraska" },
+        { abbr: "NV", name: "Nevada" },
+        { abbr: "NH", name: "New Hampshire" },
+        { abbr: "NJ", name: "New Jersey" },
+        { abbr: "NM", name: "New Mexico" },
+        { abbr: "NY", name: "New York" },
+        { abbr: "NC", name: "North Carolina" },
+        { abbr: "ND", name: "North Dakota" },
+        { abbr: "OH", name: "Ohio" },
+        { abbr: "OK", name: "Oklahoma" },
+        { abbr: "OR", name: "Oregon" },
+        { abbr: "PA", name: "Pennsylvania" },
+        { abbr: "RI", name: "Rhode Island" },
+        { abbr: "SC", name: "South Carolina" },
+        { abbr: "SD", name: "South Dakota" },
+        { abbr: "TN", name: "Tennessee" },
+        { abbr: "TX", name: "Texas" },
+        { abbr: "UT", name: "Utah" },
+        { abbr: "VT", name: "Vermont" },
+        { abbr: "VA", name: "Virginia" },
+        { abbr: "WA", name: "Washington" },
+        { abbr: "WV", name: "West Virginia" },
+        { abbr: "WI", name: "Wisconsin" },
+        { abbr: "WY", name: "Wyoming" }
+    ];
+    const selectElement = document.getElementById('state');
+    states.forEach(function(state) {
+        const option = document.createElement('option');
+        option.value = state.abbr;
+        option.textContent = state.name;
+        selectElement.appendChild(option);
+    });
     
         function showError(inputElement, message) {
             const error = document.createElement('div');
@@ -423,7 +740,7 @@
             const email = document.getElementById('email');
             const flatDetails = document.getElementById('flatDetails');
             const state = document.getElementById('state');
-            const country = document.getElementById('country');
+            // const country = document.getElementById('country');
             const phno = document.getElementById('phno');
             const phnoRegex = /^\+?1?\d{9,15}$/;
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -448,10 +765,10 @@
                 showError(state, 'State is required.');
                 isValid = false;
             }
-            if (!country.value.trim()) {
-                showError(country, 'Country is required.');
-                isValid = false;
-            }
+            // if (!country.value.trim()) {
+            //     showError(country, 'Country is required.');
+            //     isValid = false;
+            // }
             if (!phno.value.match(phnoRegex)) {
                 showError(phno, 'Please enter a valid phone number.');
                 isValid = false;
@@ -492,7 +809,7 @@
         formData.append('line1', document.getElementById('line1').value);
         formData.append('line2', document.getElementById('line2').value);
         formData.append('state', document.getElementById('state').value);
-        formData.append('country', document.getElementById('country').value);
+        // formData.append('country', document.getElementById('country').value);
         formData.append('countryCode', document.getElementById('countryCode').value);
         formData.append('phno', document.getElementById('phno').value);
         formData.append('type',document.getElementById('form-type').value);

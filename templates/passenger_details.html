@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form id="flight-form" action="{% url 'add_passengers' %}" method="post" >
+    <h2 class="payment-portal-header">Booking & Passenger Confirmation</h2>
+    <div class="container">
+        <div>
+            
+        <p><strong>Arrival:</strong>{{ flight_data.depart_time }}
+        <p><strong>arrival_airport:</strong>{{ flight_data.arrival_airport }}
+        
+        <p><strong>depart_airport:</strong>{{ flight_data.depart_airport }}
+        <p><strong>arrival_time:</strong>{{ flight_data.arrival_time }}
+        <p><strong>duration:</strong>{{ flight_data.duration }}
+        <p><strong>price:</strong><span id = "price">{{ flight_data.price }}</span>
+        
+        
+        <input type="text" value = "{{ flight_data.depart_time }}" name = "depart_time" hidden>
+        <input type="text" value = "{{ flight_data.arrival_airport }}" name = "arrival_airport" hidden>
+        <input type="text" value = "{{ flight_data.depart_airport }}" name = "depart_airport" hidden>
+        <input type="text" value = "{{ flight_data.arrival_time }}" name = "arrival_time" hidden>
+        <input type="text" value = "{{ flight_data.duration }}" name = "duration" hidden>
+        <input type="text" value = {{flight_data.price}} name = "price" hidden>
+
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Add Passenger Details</h2>
+            {% csrf_token %}
+            <div id="passengerContainer">
+                <!-- Passenger fields will be added here -->
+            </div>
+            <button type="button" id="addPassengerBtn">Add Passenger</button>
+    </div>
+
+    <div class="container">
+        <p>Total Price: <input type="text" id="totalprice" name="totalprice" value= 0 hidden/>  </p>
+        <h2>Confirm Payment Method</h2>
+        <div class="custom-select-wrapper">
+            <select name="payment_method">
+                {% for option in payment_options %}
+                    <option value="{{ option.id }}">Card ending in {{ option.card_number|slice:"-4:" }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="container">
+        <button type="submit" id="addPassengerBtn">Book Flight</button>
+    </div>
+
+</form>
+<script>
+    
+document.addEventListener('DOMContentLoaded', function() {
+        var passengerContainer = document.getElementById('passengerContainer');
+        var addPassengerBtn = document.getElementById('addPassengerBtn');
+
+        var index = 0; // Initialize a counter outside the event listener
+        var total_passengers = 0; 
+
+        addPassengerBtn.addEventListener('click', function() {
+    var newFieldSet = document.createElement('fieldset');
+    newFieldSet.innerHTML = `
+        <legend>Passenger</legend>
+        <label for="fname_${index}">First Name:</label>
+        <input type="text" name="fname_${index}" id="fname_${index}" required>
+        <label for="lname_${index}">Last Name:</label>
+        <input type="text" name="lname_${index}" id="lname_${index}" required>
+        <label for="age_${index}">Age:</label>
+        <input type="number" name="age_${index}" id="age_${index}" required>
+        <label for="dl_number_${index}">D/L Number:</label>
+        <input type="text" name="dl_number_${index}" id="dl_number_${index}" required>
+        <button type="button" class="removePassengerBtn">Remove</button>
+    `;
+    total_passengers++;
+    document.getElementById('totalprice').value =  total_passengers * parseFloat(document.getElementById('price').innerText);
+    passengerContainer.appendChild(newFieldSet);
+
+    // Add remove functionality
+    newFieldSet.querySelector('.removePassengerBtn').addEventListener('click', function() {
+        passengerContainer.removeChild(newFieldSet);
+        total_passengers--;
+        document.getElementById('totalprice').value =  total_passengers * parseFloat(document.getElementById('price').innerText);
+    });
+    index++; // Increment the index each time a new passenger is added
+});
+
+    });
+</script>
+
+</script>
+
+
+
+<style>
+    #passengerContainer fieldset {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.removePassengerBtn {
+    margin-top: 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+    .container {
+        max-width: 600px;
+        margin: 3px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: left;
+    }
+
+    h2 {
+        text-align: center;
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    p {
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 10px 0;
+    }
+
+    p strong {
+        color: #333;
+        font-weight: 600;
+    }
+
+    form {
+        margin-top: 20px;
+    }
+
+    select, button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f8f8f8;
+        box-sizing: border-box; 
+    }
+
+    button {
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+    .payment-portal-header {
+        text-align: center;
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 30px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+        .container {
+            width: 90%;
+            padding: 10px;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+
+        p {
+            font-size: 14px;
+        }
+    }
+
+
+
+
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+.custom-select-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .custom-select-wrapper select {
+        width: 100%;
+        cursor: pointer;
+        text-indent: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        appearance: none; 
+        -webkit-appearance: none; /* For Safari */
+        -moz-appearance: none; /* For Firefox */
+        background-color: #f8f8f8;
+    }
+
+    /* Creating the custom arrow */
+    .custom-select-wrapper::after {
+        content: '▼'; /* Dropdown arrow */
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        pointer-events: none; 
+        color: #333;
+        font-size: 12px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock %}

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect,get_object_or_404
 from django.http import Http404
 from django.http import JsonResponse
 from django.contrib.auth.models import User
-from .models import City
+from .models import AirportLOCID, City
 from django.core.mail import send_mail
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
@@ -11,6 +11,7 @@ import random
 import time
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.utils.timezone import now
 
 
 from django.contrib.auth import authenticate, login, logout
@@ -21,8 +22,10 @@ from django.contrib import messages
 import requests
 from django.urls import reverse
 from datetime import datetime 
-from .models import MovieTickets
+from .models import MovieTickets, OTPStorage
 import json
+from .models import FlightBooking, Passenger
+import time
 
 @csrf_exempt
 def register(request):
@@ -69,8 +72,9 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
-            return render(request, 'startingpage.html')     
+            return redirect(home)
     return render(request, 'login.html')
+
 def admin_login(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -85,6 +89,70 @@ def admin_login(request):
 def user_logout(request):
     logout(request)
     return redirect('login')  
+
+def forgot_password(request):
+    print("forgot_pass")
+    if request.method == 'GET':
+        return render(request, 'forgot_password.html', {'show_form':True, 'show_error': False})
+    if request.method == 'POST':
+        email = request.POST['email']
+        if User.objects.filter(email=email).exists():
+            subject = "Password Reset"
+            otp = ''.join(random.sample(str(int(time.time())), 5))
+            context = {
+                'otp': otp
+            }
+            html_message = render_to_string('reset_password_email.html', context)
+            plain_message = strip_tags(html_message)  
+
+            from_email = settings.EMAIL_HOST_USER
+            to_email = [email]
+
+            send_mail(subject, plain_message, from_email, to_email, html_message=html_message)
+            #
+            OTPStorage.objects.create(email=email, otp=otp)
+            #
+            response =  redirect(reset_password)
+            response.set_cookie('email', email, max_age=3600)  # expires in 1 hour
+            return response
+
+        else:
+            return render(request, 'forgot_password.html', {'show_form': True,'show_error': True})
+
+
+def reset_password(request):
+    if request.method == 'GET':
+        return render(request, 'reset_password.html', {'show_otp_form':True})
+    if request.method == 'POST':
+        email = request.COOKIES.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+        otp = request.POST.get('otp')
+        time_limit = now() - datetime.timedelta(minutes=5)
+        if otp :
+            try:
+                entry = OTPStorage.objects.get(email=email, otp=otp, created_date__gte=time_limit)
+                entry.delete()
+                return render(request, 'reset_password.html', {'show_otp_form':False})
+            except:
+                return render(request, 'reset_password.html', {'show_otp_form':True, "show_otp_error":True})
+        else:
+            if password and confirm_password: 
+                #compare with old password
+                user = authenticate(request, email=email, password=password)
+                if (password == confirm_password) and (not user):
+                    user = User.objects.get(email=email)
+                    user.set_password(password)
+                    user.save()
+                    return redirect(user_login)
+                else:
+                    return render(request, 'reset_password.html', {'show_otp_form':False, 'show_password_error': True})
+            else:
+                return render(request, 'reset_password.html', {'show_otp_form':False, 'show_password_error': True})
+
+        
+            
+
 @csrf_exempt
 def profile(request):
     print(f"invoked by ",request.user.username)
@@ -232,7 +300,6 @@ def booking_view(request):
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 def movies_home(request):
-    time.sleep(2)
     latest_selection = CitySelection.objects.filter(user=request.user).order_by('-created').first()
     print('latest_selection in movies',latest_selection)
     data={}
@@ -263,14 +330,13 @@ def movies_home(request):
     theaters_query = {"latitude":data['latitude'],"longitude":data['longitude'], "radius": "50"}
     print('theaters_query',theaters_query)
     theaters_headers = {
-        'X-RapidAPI-Key': '7dbc098597msh8dfc40d52e8a0fcp173ffejsneb6d1efbdb5d',  
+        'X-RapidAPI-Key': 'ee92e90528msh5c7ce596da5ee43p16c4fajsn512eea1cd54d',  
         "X-RapidAPI-Host": "flixster.p.rapidapi.com"
     }
     theaters_response = requests.get(theaters_url, headers=theaters_headers, params=theaters_query)
     print(theaters_response,'theaters_response')
-    theaters_data = theaters_response.json()['data']['theaters'][:10] 
+    theaters_data = theaters_response.json()['data']['theaters'][:2] 
     movies_dict = {}
-    # print("theatres:",theaters_data)
 
 
     for theater in theaters_data:
@@ -510,6 +576,88 @@ def search_flights(request):
 
     return render(request, 'flights_home.html')
 
+def flight_confirmation(request):
+    if request.method == 'POST':
+        flight_data = {}
+        flight_data["depart_time"] = request.POST.get("depart_time")
+        flight_data["arrival_airport"] = request.POST.get("arrival_airport")
+        flight_data["depart_airport"] = request.POST.get("depart_airport")
+        flight_data["arrival_time"] = request.POST.get("arrival_time")
+        flight_data["duration"] = request.POST.get("duration")
+        flight_data["price"] = request.POST.get("price")
+        
+        payment_options = PaymentDetail.objects.filter(user_profile__user=request.user)
+
+        context = {'flight_data': flight_data, 'payment_options': payment_options}
+        return render(request, "passenger_details.html", context)
+
+def add_passengers(request):
+    if request.method == 'POST':
+        passengers = []
+        i = 0
+        while True:
+            fname = request.POST.get(f'fname_{i}')
+            lname = request.POST.get(f'lname_{i}')
+            age = request.POST.get(f'age_{i}')
+            dl_number = request.POST.get(f'dl_number_{i}')
+            if not fname:
+                break
+            passengers.append({
+                'first_name': fname,
+                'last_name': lname,
+                'age': age,
+                'dl_number': dl_number
+            })
+            i += 1
+
+        subject = "Booking Confirmation"
+        print(request.POST.get('totalprice'))
+        context = {
+        'depart_time': request.POST.get('depart_time'),
+        'arrival_airport': request.POST.get('arrival_airport'),
+        'depart_airport': request.POST.get('depart_airport'),
+        'arrival_time': request.POST.get('arrival_time'),
+        'duration': request.POST.get('duration'),
+        'booking_id': int(time.time()),
+        'passengers': passengers,
+        'card_ending': request.POST.get('payment_method'),
+        'totalprice': request.POST.get('totalprice'),
+        }
+
+        booking = FlightBooking(
+            depart_time=request.POST.get('depart_time'),
+            arrival_airport=request.POST.get('arrival_airport'),
+            depart_airport=request.POST.get('depart_airport'),
+            arrival_time=request.POST.get('arrival_time'),
+            duration=request.POST.get('duration'),
+            booking_id=str(int(time.time())),  # Booking ID generated from current time
+            card_ending=request.POST.get('payment_method'),  # Assuming you want the last 4 digits only
+            price=float(request.POST.get('totalprice')),  # Convert price to float
+            thank_you_note="Thank you for your booking. Enjoy the show!"
+        )
+        booking.save()
+
+        for passenger in passengers:  # Assuming 'passengers' is a list of dictionaries
+            Passenger(
+                booking=booking,
+                first_name=passenger['first_name'],
+                last_name=passenger['last_name'],
+                age=int(passenger['age']),
+                dl_number=passenger['dl_number']
+            ).save()
+
+        html_message = render_to_string('flight_booking_confirmation_email.html', context)
+        plain_message = strip_tags(html_message)  
+
+        from_email = settings.EMAIL_HOST_USER
+        to_email = [request.user.email]
+        print("sending mail")
+        send_mail(subject, plain_message, from_email, to_email, html_message=html_message)
+        return HttpResponse("Passenger data processed successfully.")
+
+    return render(request, 'passenger_details.html')
+
+
 def flight_results(request, origin_id, destination_id, date, sort_order,class_type):
     headers = {
         "X-RapidAPI-Key": "7dbc098597msh8dfc40d52e8a0fcp173ffejsneb6d1efbdb5d",
@@ -594,6 +742,14 @@ def search_cities(request):
         cities = list(qs.values('city_name', 'state_name', 'lat', 'lng'))
         return JsonResponse(cities, safe=False)
     return JsonResponse([])
+
+def search_airports(request):
+    if 'term' in request.GET:
+        qs = AirportLOCID.objects.filter(locid__icontains=request.GET.get('term'))[:5]
+        airports = list(qs.values('locid',))
+        return JsonResponse(airports, safe=False)
+    return JsonResponse([])
+
 @csrf_exempt
 def save_selection(request):
     if request.method == 'POST':
@@ -646,24 +802,15 @@ def show_tickets(request, booking_id,payment_id,price):
     payment_method = get_object_or_404(PaymentDetail, id=payment_id, user_profile__user=request.user)
     card_ending = payment_method.card_number[-4:]
     subject = 'Your Booking Details from BookNow'
-    # message = f"""
-    # Booking ID: {booking_id}
-    # Movie: {ticket.movie}
-    # Theatre: {ticket.theater}
-    # Showtime: {ticket.showtime}
-    # Paid using the card ending with {card_ending}
-    # Price: ${price}
-    # """
-    # from_email = settings.EMAIL_HOST_USER  
-    # to_email = [request.user.email] 
 
-    # send_mail(subject, message, from_email, to_email)
+    print(str(ticket))
    
     context = {
     'booking_id': booking_id,
     'movie': ticket.movie,
     'theater': ticket.theater,
     'showtime': ticket.showtime,
+    'ticket': ticket.tickets,
     'card_ending': card_ending,
     'price': price,
     }
@@ -672,7 +819,7 @@ def show_tickets(request, booking_id,payment_id,price):
 
     from_email = settings.EMAIL_HOST_USER
     to_email = [request.user.email]
-
+    print("sending mail")
     send_mail(subject, plain_message, from_email, to_email, html_message=html_message)
     context = {
         'ticket': ticket,
@@ -681,6 +828,7 @@ def show_tickets(request, booking_id,payment_id,price):
         'price':price
     }
     return render(request, 'show_tickets.html', context)
+
 def delete_payment_info(request):
     payment_detail_card_number = request.POST.get('payment_detail_card_number')
     try:

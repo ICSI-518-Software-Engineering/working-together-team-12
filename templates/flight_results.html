@@ -3,35 +3,47 @@
 {% block content %}
 <div class="flight-results-container">
     {% for flight in flights %}
-    <div class="flight-card">
-        <div class="flight-info">
-            <!-- Departure info -->
-            <div class="time-info departure-info">
-                <span class="formatted-time">{{ flight.formatted_depart_time }}</span>
-                <div class="airport-name">{{ flight.arrival_airport }}</div>
+    <form id="flight-form" action="{% url 'flight_confirmation' %}" method="post" >
 
+        <input type="text" value = "{{flight.formatted_depart_time}}" name = "depart_time" hidden>
+        <input type="text" value = "{{flight.arrival_airport}}" name = "arrival_airport" hidden>
+        <input type="text" value = {{flight.depart_airport}} name = "depart_airport" hidden>
+        <input type="text" value = {{flight.formatted_arrival_time}} name = "arrival_time" hidden>
+        <input type="text" value = {{flight.duration}} name = "duration" hidden>
+        <input type="text" value = {{flight.price}} name = "price" hidden>
+
+        {% csrf_token %}
+        <div class="flight-card">
+            <div class="flight-info">
+                <!-- Departure info -->
+                <div class="time-info departure-info">
+                    <span class="formatted-time">{{ flight.formatted_depart_time }}</span>
+                    <div class="airport-name">{{ flight.arrival_airport }}</div>
+
+                </div>
+                <!-- Duration and stop info -->
+                <div class="duration-info">
+                    <span>{{ flight.duration }} min</span>
+                    <div class="duration-line"></div>  <!-- Visual representation of the flight line -->
+                </div>
+                <!-- Arrival info -->
+                <div class="time-info arrival-info">
+                    <span class="formatted-time">{{ flight.formatted_arrival_time }}</span>
+                    <div class="airport-name">{{ flight.depart_airport }}</div>
+                </div>
             </div>
-            <!-- Duration and stop info -->
-            <div class="duration-info">
-                <span>{{ flight.duration }} min</span>
-                <div class="duration-line"></div>  <!-- Visual representation of the flight line -->
-            </div>
-            <!-- Arrival info -->
-            <div class="time-info arrival-info">
-                <span class="formatted-time">{{ flight.formatted_arrival_time }}</span>
-                <div class="airport-name">{{ flight.depart_airport }}</div>
+            <div class="price-section">
+                <div class="price-info">
+                    ${{ flight.price }}
+                    <span>per adult</span>
+                </div>
+                <button type= "submit" class="book-button">BOOK NOW</button>
             </div>
         </div>
-        <div class="price-section">
-            <div class="price-info">
-                ${{ flight.price }}
-                <span>per adult</span>
-            </div>
-            <button class="book-button">BOOK NOW</button>
-        </div>
-    </div>
+    </form>
     {% endfor %}
 </div>
+
 <style>
     .flight-results-container {
         background-image: url("/static/Flights_c.jpg");

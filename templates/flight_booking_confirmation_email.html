@@ -34,15 +34,28 @@
         </div>
         <div class="email-body">
             <p><strong>Booking ID:</strong> {{ booking_id }}</p>
-            <p><strong>Movie:</strong> {{ movie }}</p>
-            <p><strong>Theatre:</strong> {{ theater }}</p>
-            <p><strong>Showtime:</strong> {{ showtime }}</p>
-            <p><strong>Selected Seats:</strong> {{ ticket }}</p>
+
+            <p><strong>Arrival:</strong>{{ depart_time }}</p>
+            <p><strong>Arrival Airport:</strong>{{ arrival_airport }}</p>
+            
+            <p><strong>Depart Dirport:</strong>{{ depart_airport }}</p>
+            <p><strong>Arrival Time:</strong>{{ arrival_time }}</p>
+            <p><strong>Duration:</strong>{{ duration }}</p>
+            <p><strong>Price:</strong><span id = "price">{{ totalprice }}</span></p>
 
             <p><strong>Paid using the card ending with:</strong> {{ card_ending }}</p>
-            <p><strong>Price:</strong> ${{ price }}</p>
             <p>Thank you for your booking. Enjoy the show!</p>
+
+            {%for passenger in passengers%}
+                <p><strong>Passenger Details:</strong> </p>
+                <p><strong>First Name:</strong> {{ passenger.first_name}}</p>
+                <p><strong>Laste Name:</strong> {{ passenger.last_name}}</p>
+                <p><strong>Age:</strong> {{ passenger.age}}</p>
+                <p><strong>DL Number:</strong> {{ passenger.dl_number}}</p>
+                <p> ------ </p>
+            {%endfor%}
         </div>
+
         <div class="email-footer">
             Regards,<br>
             The BookNow Team

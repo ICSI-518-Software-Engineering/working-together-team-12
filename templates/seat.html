@@ -10,10 +10,32 @@ MOVIES | Seats
 <style>
   .hall__screen {
     background-image: url({{show.movie.movie_poster.url}});
+    height: 50px;
   }
 </style>
 {% endblock %}
+<style>
+.seat.notvacant {
+  background: #ccc;
+  background: linear-gradient(#ccc 0%, #ccc 70%, #000 70%, #ccc 77%);
+}
 
+.seat.notvacant label {
+  cursor: default; /* Overrides pointer to indicate the seat is not selectable */
+}
+
+.seat.notvacant label:after {
+  background: #ccc;
+  opacity: 1; /* Always visible to indicate the seat is taken */
+}
+
+/* Make sure hover and checked styles do not apply to notvacant seats */
+.seat.notvacant label:hover::after,
+.seat.notvacant input[type=checkbox]:checked + label:after {
+  background: #ccc;
+  opacity: 1; /* Keep the same appearance */
+}
+</style>
 
 <div class="d-none">
   <div class="col-2">
@@ -29,7 +51,7 @@ MOVIES | Seats
 </div>
 
 {% block content %}
-<div class="container-fluid">
+<div class="container-fluid" style="background-color: #000;">
   <div class="row">
     <div class="col-12 hall" style="background: linear-gradient(360deg, black, #1f1f1f);">
       <form action="" method="POST" id="book">
@@ -37,7 +59,7 @@ MOVIES | Seats
         <input type="hidden" value="{{show.shows}}" name="show" readonly>
 
 
-        <div class="hall__screen"></div>
+        <div class="hall__screen" style="height: 50px;"></div>
 
 
         <div class="seats">
@@ -103,16 +125,16 @@ MOVIES | Seats
               <input type="checkbox" value="B3" id="seatB3" name="check" />
               <label for="seatB3"></label>
             </div>
-            <div class="seat" id="B4">
-              <input type="checkbox" value="B4" id="seatB4" name="check" />
+            <div class="seat notvacant" id="B4">
+              <input type="checkbox" value="B4" id="seatB4" name="check" disabled/>
               <label for="seatB4"></label>
             </div>
-            <div class="seat" id="B5">
-              <input type="checkbox" value="B5" id="seatB5" name="check" />
+            <div class="seat notvacant" id="B5">
+              <input type="checkbox" value="B5" id="seatB5" name="check" disabled/>
               <label for="seatB5"></label>
             </div>
-            <div class="seat" id="B6">
-              <input type="checkbox" value="B6" id="seatB6" name="check" />
+            <div class="seat notvacant" id="B6">
+              <input type="checkbox" value="B6" id="seatB6" name="check" disabled/>
               <label for="seatB6"></label>
             </div>
             <div class="seat" id="B7">
@@ -225,6 +247,192 @@ MOVIES | Seats
               <label for="seatD10"></label>
             </div>
           </div>
+
+          <div class="row">
+            <h3 class="text-white m-2">E</h3>
+            <div class="seat" id="E1">
+              <input type="checkbox" value="E1" id="seatE1" name="check" />
+              <label for="seatE1"></label>
+            </div>
+            <div class="seat" id="E2">
+              <input type="checkbox" value="E2" id="seatE2" name="check" />
+              <label for="seatE2"></label>
+            </div>
+            <div class="space"></div>
+            <div class="seat" id="E3">
+              <input type="checkbox" value="E3" id="seatE3" name="check" />
+              <label for="seatE3"></label>
+            </div>
+            <div class="seat" id="E4">
+              <input type="checkbox" value="E4" id="seatE4" name="check" />
+              <label for="seatE4"></label>
+            </div>
+            <div class="seat" id="E5">
+              <input type="checkbox" value="E5" id="seatE5" name="check" />
+              <label for="seatE5"></label>
+            </div>
+            <div class="seat" id="E6">
+              <input type="checkbox" value="E6" id="seatE6" name="check" />
+              <label for="seatE6"></label>
+            </div>
+            <div class="seat" id="E7">
+              <input type="checkbox" value="E7" id="seatE7" name="check" />
+              <label for="seatE7"></label>
+            </div>
+            <div class="seat" id="E8">
+              <input type="checkbox" value="E8" id="seatE8" name="check" />
+              <label for="seatE8"></label>
+            </div>
+            <div class="space"></div>
+            <div class="seat" id="E9">
+              <input type="checkbox" value="E9" id="seatE9" name="check" />
+              <label for="seatE9"></label>
+            </div>
+            <div class="seat" id="E10">
+              <input type="checkbox" value="E10" id="seatE10" name="check" />
+              <label for="seatE10"></label>
+            </div>
+          </div>
+
+          <div class="row">
+            <h3 class="text-white m-2">F</h3>
+            <div class="seat" id="F1">
+              <input type="checkbox" value="F1" id="seatF1" name="check" />
+              <label for="seatF1"></label>
+            </div>
+            <div class="seat" id="F2">
+              <input type="checkbox" value="F2" id="seatF2" name="check" />
+              <label for="seatF2"></label>
+            </div>
+            <div class="space"></div>
+            <div class="seat" id="F3">
+              <input type="checkbox" value="F3" id="seatF3" name="check" />
+              <label for="seatF3"></label>
+            </div>
+            <div class="seat" id="F4">
+              <input type="checkbox" value="F4" id="seatF4" name="check" />
+              <label for="seatF4"></label>
+            </div>
+            <div class="seat" id="F5">
+              <input type="checkbox" value="F5" id="seatF5" name="check" />
+              <label for="seatF5"></label>
+            </div>
+            <div class="seat" id="F6">
+              <input type="checkbox" value="F6" id="seatF6" name="check" />
+              <label for="seatF6"></label>
+            </div>
+            <div class="seat" id="F7">
+              <input type="checkbox" value="F7" id="seatF7" name="check" />
+              <label for="seatF7"></label>
+            </div>
+            <div class="seat" id="F8">
+              <input type="checkbox" value="F8" id="seatF8" name="check" />
+              <label for="seatF8"></label>
+            </div>
+            <div class="space"></div>
+            <div class="seat" id="F9">
+              <input type="checkbox" value="F9" id="seatF9" name="check" />
+              <label for="seatF9"></label>
+            </div>
+            <div class="seat" id="F10">
+              <input type="checkbox" value="F10" id="seatF10" name="check" />
+              <label for="seatF10"></label>
+            </div>
+          </div>
+
+          <div class="row">
+            <h3 class="text-white m-2">G</h3>
+            <div class="seat" id="G1">
+              <input type="checkbox" value="G1" id="seatG1" name="check" />
+              <label for="seatG1"></label>
+            </div>
+            <div class="seat" id="G2">
+              <input type="checkbox" value="G2" id="seatG2" name="check" />
+              <label for="seatG2"></label>
+            </div>
+            <div class="space"></div>
+            <div class="seat" id="G3">
+              <input type="checkbox" value="G3" id="seatG3" name="check" />
+              <label for="seatG3"></label>
+            </div>
+            <div class="seat" id="G4">
+              <input type="checkbox" value="G4" id="seatG4" name="check" />
+              <label for="seatG4"></label>
+            </div>
+            <div class="seat" id="G5">
+              <input type="checkbox" value="G5" id="seatG5" name="check" />
+              <label for="seatG5"></label>
+            </div>
+            <div class="seat" id="G6">
+              <input type="checkbox" value="G6" id="seatG6" name="check" />
+              <label for="seatG6"></label>
+            </div>
+            <div class="seat" id="G7">
+              <input type="checkbox" value="G7" id="seatG7" name="check" />
+              <label for="seatG7"></label>
+            </div>
+            <div class="seat notvacant" id="G8">
+              <input type="checkbox" value="G8" id="seatG8" name="check" disabled/>
+              <label for="seatG8"></label>
+            </div>
+            <div class="space"></div>
+            <div class="seat notvacant" id="G9">
+              <input type="checkbox" value="G9" id="seatG9" name="check" disabled/>
+              <label for="seatG9"></label>
+            </div>
+            <div class="seat notvacant" id="G10">
+              <input type="checkbox" value="G10" id="seatG10" name="check" disabled/>
+              <label for="seatG10"></label>
+            </div>
+          </div>
+
+
+          <div class="row">
+            <h3 class="text-white m-2">H</h3>
+            <div class="seat" id="H1">
+              <input type="checkbox" value="H1" id="seatH1" name="check" />
+              <label for="seatH1"></label>
+            </div>
+            <div class="seat" id="H2">
+              <input type="checkbox" value="H2" id="seatH2" name="check" />
+              <label for="seatH2"></label>
+            </div>
+            
+            <div class="seat" id="H3">
+              <input type="checkbox" value="H3" id="seatH3" name="check" />
+              <label for="seatH3"></label>
+            </div>
+            <div class="seat notvacant" id="H4">
+              <input type="checkbox" value="H4" id="seatH4" name="check"  disabled/>
+              <label for="seatH4"></label>
+            </div>
+            <div class="seat notvacant" id="H5">
+              <input type="checkbox" value="H5" id="seatH5" name="check" disabled/>
+              <label for="seatH5"></label>
+            </div>
+            <div class="seat" id="H6">
+              <input type="checkbox" value="H6" id="seatH6" name="check" />
+              <label for="seatH6"></label>
+            </div>
+            <div class="seat" id="H7">
+              <input type="checkbox" value="H7" id="seatH7" name="check" />
+              <label for="seatH7"></label>
+            </div>
+            <div class="seat notvacant" id="H8">
+              <input type="checkbox" value="H8" id="seatH8" name="check" disabled/>
+              <label for="seatH8"></label>
+            </div>
+            
+            <div class="seat" id="H9">
+              <input type="checkbox" value="H9" id="seatH9" name="check" />
+              <label for="seatH9"></label>
+            </div>
+            <div class="seat" id="H10">
+              <input type="checkbox" value="H10" id="seatH10" name="check" />
+              <label for="seatH10"></label>
+            </div>
+          </div>
+
         </div>
       </form>
 
@@ -238,18 +446,26 @@ MOVIES | Seats
 </div>
 
 
-  <div class="row bottom">
-    <div class="col-9">
-      <h1 class="text-white">Selected Seats : <span id="slots"></span></h1>
-    </div>
-    <div class="col-3">
-      {% if user.is_authenticated %}
-      <button  id="booking_submit"  class="btn btn-lg btn-block btn-primary"> Confirm Booking </button>
-      {% else %}
-      <a href="/accounts/login" class="btn btn-lg btn-block btn-danger"> Login To Book </a>
-      {% endif %}
+  <div class="row">
+    <div class="col-12" style="font-size: 20px; text-align-last: center; ">
+      <p class="text-white">Selected Seats : <span id="slots"></span></p>
     </div>
   </div>
+
+  
+
+    <div class="row">
+        <div class="col-5"></div>
+        <div class="col-2" style="font-size: 20px; text-align-last: center; ">
+          {% if user.is_authenticated %}
+          <button  id="booking_submit"  class="btn btn-lg btn-block btn-primary"> Confirm Booking </button>
+          {% else %}
+          <a href="/accounts/login" class="btn btn-lg btn-block btn-danger"> Login To Book </a>
+          {% endif %}
+      </div>
+      <div class="col-5"></div>
+    </div>
+  
 
 </div>
 <script>

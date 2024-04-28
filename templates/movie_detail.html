@@ -49,8 +49,8 @@
 
 {% block content %}
 <div id="movie_container">
-    <div class="row">
-        <div class="col-md-6">
+    <div class="row" style="height: 100%;     width: 100%;">
+        <div class="col-md-6 scrollable-div" style="height: 100%; overflow: scroll;">
             <div class="movie-details">
                 <img src="{{ movie_data.poster_image }}" alt="Movie Poster" class="movie-poster">
                 <div class="movie-info"><strong>Synopsis:</strong> {{ movie_data.synopsis }}</div>
@@ -75,10 +75,20 @@
     </div>
 </div>
 <style>
+    .scrollable-div {
+    overflow: auto; /* Enable scrolling */
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+.scrollable-div::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
+}
+
     #movie_container{
         background-image: url("/static/Movies_c.png");
         position: relative; 
-        height: 100vh; 
+        height: 90vh; 
         width: 100%; 
         background-size: cover; 
         background-position: center; 
@@ -86,5 +96,6 @@
         background-attachment: fixed; 
         overflow-y: auto; 
     }
+
 </style>
 {% endblock %}

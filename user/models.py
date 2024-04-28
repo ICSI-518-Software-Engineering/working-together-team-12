@@ -63,5 +63,41 @@ class MovieTickets(models.Model):
     def __str__(self):
         return f"{self.movie} - {self.showtime} - {self.user} - {self.booking_id}"
     
+class OTPStorage(models.Model):
+    email = models.EmailField()
+    otp = models.CharField(max_length=6)
+    created_date = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.email} - {self.otp}"
+
+class AirportLOCID(models.Model):
+    # Assuming the CSV has columns for code, name, and location, etc.
+    locid = models.CharField(max_length=10, unique=True)
+    location = models.CharField(max_length=255)
     
+    def __str__(self):
+        return self.cid
+    
+class FlightBooking(models.Model):
+    booking_id = models.CharField(max_length=20, unique=True)
+    arrival_time = models.TimeField()
+    arrival_airport = models.CharField(max_length=100)
+    departure_airport = models.CharField(max_length=100)
+    duration = models.IntegerField(help_text="Duration in minutes")
+    price = models.FloatField()
+    payment_card_ending = models.CharField(max_length=4)
+    thank_you_note = models.TextField(default="Thank you for your booking. Enjoy the show!")
+
+    def __str__(self):
+        return f"Booking ID {self.booking_id} at {self.arrival_airport}"
+
+class Passenger(models.Model):
+    booking = models.ForeignKey(FlightBooking, on_delete=models.CASCADE, related_name="passengers")
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    age = models.IntegerField()
+    dl_number = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"

@@ -4,9 +4,6 @@
 <div class="container form-signin">
     <h2 class="form-heading">Register</h2>
     <form method="post" class="login-form">
-        <!-- {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-lg btn-primary btn-block animated-button">Register</button> -->
         <div class="form-group">
             <label for="id_username">Username:</label>
             <input type="text" id="id_username" name="username" required>
@@ -17,25 +14,33 @@
             <input type="email" id="id_email" name="email" required>
         </div>
         
-        
         <div class="form-group">
             <label for="id_password1">Password:</label>
-            <input type="password" id="id_password1" name="password1" required>
+            <input type="password" id="id_password1" name="password1" required oninput="validatePassword()">
+            <ul id="passwordCriteria" class="password-criteria">
+                <li id="minChar">At least 8 characters</li>
+                <li id="upperCase">At least one uppercase letter</li>
+                <li id="lowerCase">At least one lowercase letter</li>
+                <li id="digit">At least one number</li>
+                <li id="specialChar">At least one symbol</li>
+            </ul>
         </div>
         
         <div class="form-group">
             <label for="id_password2">Confirm Password:</label>
-            <input type="password" id="id_password2" name="password2" required>
+            <input type="password" id="id_password2" name="password2" required oninput="validateConfirmPassword()">
+            <div id="passwordMatch" class="password-match"></div>
         </div>
         
         <button type="button" id="submit_btn" class="btn btn-lg btn-primary btn-block animated-button">Register</button>
     </form>
     <a href="{% url 'login' %}" class="signup-link">Already have an account? Log in</a>
 </div>
+
 <style>
     body {
         padding-top: 20px;
-        background: url("/static/profile_bg.jpg");
+        /* background: url("/static/profile_bg.jpg"); */
         font-family: 'Poppins', sans-serif;
     }
     .container {
@@ -103,6 +108,21 @@
     .signup-link:hover {
         color: #ca0808;
     }
+    .password-criteria {
+    list-style: none;
+    padding: 0;
+    margin-top: 5px;
+}
+
+.password-criteria li {
+    color: red; /* Start with red indicating not met */
+    font-size: 0.8em;
+}
+
+.password-criteria li.valid {
+    color: green; /* Green when the criteria is met */
+}
+
     @keyframes slide-in {
         0% {
             opacity: 0;
@@ -113,8 +133,34 @@
             transform: translateY(0);
         }
     }
+
 </style>
 <script>
+function validatePassword() {
+    const password = document.getElementById('id_password1').value;
+    const minChar = document.getElementById('minChar');
+    const upperCase = document.getElementById('upperCase');
+    const lowerCase = document.getElementById('lowerCase');
+    const digit = document.getElementById('digit');
+    const specialChar = document.getElementById('specialChar');
+
+    minChar.classList.toggle('valid', password.length >= 8);
+    upperCase.classList.toggle('valid', /[A-Z]/.test(password));
+    lowerCase.classList.toggle('valid', /[a-z]/.test(password));
+    digit.classList.toggle('valid', /[0-9]/.test(password));
+    specialChar.classList.toggle('valid', /[\W_]/.test(password));
+}
+
+function validateConfirmPassword() {
+        const password = document.getElementById('id_password1').value;
+        const confirmPassword = document.getElementById('id_password2').value;
+        const passwordMatch = document.getElementById('passwordMatch')
+
+        const isMatch = password === confirmPassword;
+        passwordMatch.textContent = isMatch ? 'Passwords match.' : 'Passwords do not match.';
+        passwordMatch.style.color = isMatch ? 'green' : 'red';
+    }
+
      document.addEventListener("DOMContentLoaded", function() {
     function clearPreviousErrors() {
             document.querySelectorAll('.error-message').forEach(function(message) {
@@ -130,37 +176,35 @@
             error.style.fontSize = '0.8em';
             inputElement.parentNode.insertBefore(error, inputElement.nextSibling);
         }
-    function validateRegistrationForm() {
-    clearPreviousErrors(); 
-    let isValid = true;
 
-    const username = document.getElementById('id_username');
-    if (username.value.length < 5) {
-        showError(username, 'Username must be more than 5 characters.');
-        isValid = false;
-    }
+        function validateRegistrationForm() {
+            clearPreviousErrors(); 
+            let isValid = true;
 
-    const email = document.getElementById('id_email');
-    if (!email.value.includes('@') || email.value.length < 5) {
-        showError(email, 'Email must be valid and more than 5 characters.');
-        isValid = false;
-    }
+            const username = document.getElementById('id_username');
+            const email = document.getElementById('id_email');
+            const password = document.getElementById('id_password1');
+            const confirmPassword = document.getElementById('id_password2');
 
-    const password = document.getElementById('id_password1');
-    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
-    if (!passwordRegex.test(password.value)) {
-        showError(password, 'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one symbol.');
-        isValid = false;
-    }
+            // Add checks for individual criteria based on 'valid' class presence
+            if (!document.getElementById('minChar').classList.contains('valid') ||
+                !document.getElementById('upperCase').classList.contains('valid') ||
+                !document.getElementById('lowerCase').classList.contains('valid') ||
+                !document.getElementById('digit').classList.contains('valid') ||
+                !document.getElementById('specialChar').classList.contains('valid')) {
+                showError(password, 'Password does not meet the required criteria.');
+                isValid = false;
+            }
 
-    const confirmPassword = document.getElementById('id_password2');
-    if (password.value !== confirmPassword.value) {
-        showError(confirmPassword, 'Passwords do not match.');
-        isValid = false;
-    }
+            if (password.value !== confirmPassword.value) {
+                showError(confirmPassword, 'Passwords do not match.');
+                isValid = false;
+            }
 
-    return isValid;
+            return isValid;
 }
+
+
 
 document.getElementById('submit_btn').addEventListener('click', function(event) {
     event.preventDefault(); 
