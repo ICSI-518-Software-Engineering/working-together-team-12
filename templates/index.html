@@ -47,9 +47,9 @@ $('#cityDropdown').change(function(e){
     url: "https://api-gate2.movieglu.com/cinemasNearby/?n=5", 
     method: "GET",
     headers: {
-        "client": "REQU",   
-        "x-api-key": "ILPu1EKnTX30MHdMVJytO8dLCygblDqW7UebInXB",
-        "authorization": "Basic UkVRVToweVI1cmxTaXEyOEY=", 
+        "client": "STUD_324",   
+        "x-api-key": "4CceFE4yrv6iQJeBIMJfn6e6LMMHkxFV5BVDEqB1",
+        "authorization": "Basic U1RVRF8zMjQ6a1pzVjNQV25sSnhu", 
         "territory": "US",
         "api-version": "v200",
         "geolocation": loc,
@@ -77,14 +77,25 @@ function fetchCinemaShowtimes(cinemaId, date,loc) {
     var selectedOption = $('#cityDropdown').find('option:selected');
     var currentDateTime = new Date().toISOString();
     var loc = selectedOption.attr('class');
-    // console.log(`https://api-gate2.movieglu.com/cinemaShowTimes/?cinema_id=${cinemaId}&date=${date}&sort=popularity`);
+    const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        timeZone: 'America/New_York',
+    };
+    const _Date = new Date().toLocaleDateString('en-US', options);
+    const [month, day, year] = _Date.split('/');
+    month1 =month.padStart(2,'0');
+
+    var date= `${year}-${month1}-${day}`;
+    console.log(`url:https://api-gate2.movieglu.com/cinemaShowTimes/?cinema_id=${cinemaId}&date=${date}&sort=popularity`);
     $.ajax({
-        url: `https://api-gate2.movieglu.com/cinemaShowTimes/?cinema_id=${cinemaId}&sort=popularity`, 
+        url: `https://api-gate2.movieglu.com/cinemaShowTimes/?cinema_id=${cinemaId}&date=${date}&sort=popularity`, 
         method: "GET",
         headers: {
-        "client": "REQU",   
-        "x-api-key": "ILPu1EKnTX30MHdMVJytO8dLCygblDqW7UebInXB",
-        "authorization": "Basic UkVRVToweVI1cmxTaXEyOEY=", 
+            "client": "STUD_324",   
+        "x-api-key": "4CceFE4yrv6iQJeBIMJfn6e6LMMHkxFV5BVDEqB1",
+        "authorization": "Basic U1RVRF8zMjQ6a1pzVjNQV25sSnhu",
         "territory": "US",
         "api-version": "v200",
         "device-datetime": currentDateTime,
@@ -123,9 +134,9 @@ function handleImageClick(filmId) {
         url: `https://api-gate2.movieglu.com/closestShowing/?film_id=${filmId}&n=10`, 
         method: 'GET',
         headers:{
-        "client": "REQU",   
-        "x-api-key": "ILPu1EKnTX30MHdMVJytO8dLCygblDqW7UebInXB",
-        "authorization": "Basic UkVRVToweVI1cmxTaXEyOEY=", 
+            "client": "STUD_324",   
+        "x-api-key": "4CceFE4yrv6iQJeBIMJfn6e6LMMHkxFV5BVDEqB1",
+        "authorization": "Basic U1RVRF8zMjQ6a1pzVjNQV25sSnhu",
         "territory": "US",
         "api-version": "v200",
         "geolocation": loc,

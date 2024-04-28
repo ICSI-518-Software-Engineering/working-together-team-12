@@ -63,9 +63,9 @@ $(document).ready(function () {
             method: "GET",
             timeout: 0,
             headers: {
-                "client": "REQU",   
-                "x-api-key": "ILPu1EKnTX30MHdMVJytO8dLCygblDqW7UebInXB",
-                "authorization": "Basic UkVRVToweVI1cmxTaXEyOEY=", 
+                "client": "STUD_324",   
+                "x-api-key": "4CceFE4yrv6iQJeBIMJfn6e6LMMHkxFV5BVDEqB1",
+                "authorization": "Basic U1RVRF8zMjQ6a1pzVjNQV25sSnhu", 
                 "territory": "US",
                 "api-version": "v200",
                 "geolocation": loc,
