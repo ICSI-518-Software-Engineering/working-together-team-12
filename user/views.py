@@ -135,3 +135,444 @@ def save_selection(request):
         return JsonResponse({'status': 'success', 'redirect_url': redirect_url})
     return JsonResponse({'status': 'failed'}, status=400)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def hotel_list(request):
+    latest_selection = CitySelection.objects.filter(user=request.user).order_by('-created').first()
+    if latest_selection is not None:
+        parts = latest_selection.city_name.split(',')
+        if len(parts) >= 2:
+            city_name = parts[0].strip()  
+            state_name = parts[1].strip() 
+        matching_city = City.objects.filter(city_name=city_name, state_name=state_name).first()    
+        if matching_city:
+                    data = {
+                        'city_name': matching_city.city_name,
+                        'state_name': matching_city.state_name,
+                        'latitude': str(matching_city.lat),
+                        'longitude': str(matching_city.lng)
+                    }
+    else:
+         data = {
+                        'city_name': 'Albany',
+                        'state_name': 'New York',
+                        'latitude': '42.6850',
+                        'longitude': '73.8248'
+                    } 
+
+    url = "https://local-business-data.p.rapidapi.com/search"
+    querystring = {
+        "query": f"hotels near {data['city_name']}, {data['state_name']}",
+        "limit": "10",
+        "lat": data['latitude'],
+        "lng": data['longitude'],
+        "zoom": "13",
+        "language": "en",
+        "region": "us"
+    }
+    headers = {
+        "X-RapidAPI-Key": "f980ede61dmshd87d831abfdc365p13d4e5jsncfcae06fb6c8",
+        "X-RapidAPI-Host": "local-business-data.p.rapidapi.com"
+    }
+
+    response = requests.get(url, headers=headers, params=querystring)
+    print(response)
+    hotels = response.json().get('data', [])  
+    print(hotels)
+    request.session['hotels'] = hotels
+    return render(request, 'hotels_home.html', {'hotels': hotels})
+def hotel_detail(request, business_id):
+    hotels = request.session.get('hotels', [])
+    hotel = next((item for item in hotels if item['business_id'] == business_id), None)
+    if hotel is None:
+        raise Http404("Hotel does not exist")
+    return render(request, 'hotel_detail.html', {'hotel': hotel})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@csrf_exempt  
+def payment_confirmation(request):
+    if request.method == 'POST':
+        booking_id = request.POST.get('booking_id')
+        payment_method_id = request.POST.get('payment_method')
+        total_price = request.POST.get('total_price') 
+        ticket = get_object_or_404(MovieTickets, pk=booking_id)
+        ticket.payment = True
+        ticket.save()
+        
+        redirect_url = f"/show_tickets/{booking_id}/payment/{payment_method_id}/price/{total_price}"
+ 
+        return JsonResponse({'status': 'success','redirect_url': redirect_url})
+    
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+def show_tickets(request, booking_id,payment_id,price):
+
+    ticket = get_object_or_404(MovieTickets, booking_id=booking_id, user=request.user)
+    payment_method = get_object_or_404(PaymentDetail, id=payment_id, user_profile__user=request.user)
+    card_ending = payment_method.card_number[-4:]
+    subject = 'Your Booking Details'
+    message = f"""
+    Booking ID: {booking_id}
+    Movie: {ticket.movie}
+    Theatre: {ticket.theater}
+    Showtime: {ticket.showtime}
+    Paid using the card ending with {card_ending}
+    Price: ${price}
+    """
+    from_email = settings.EMAIL_HOST_USER  
+    to_email = [request.user.email] 
+
+    send_mail(subject, message, from_email, to_email)
+    context = {
+        'ticket': ticket,
+        'booking_id': booking_id,
+        'payment_method':payment_method,
+        'price':price
+    }
+
+    return render(request, 'show_tickets.html', context)
