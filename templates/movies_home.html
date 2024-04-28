@@ -2,7 +2,7 @@
 
 {% block content %}
 <div id="movie_home">
-    <div class="float-right mb-3">
+    <div class="centered-container">
         <form class="form-inline position-relative">
             <input class="form-control mr-sm-2" id ='city-search'; type="search" placeholder="change location" aria-label="Search" name="query">
             <ul id="city-results" class="list-group" style="display: none;"></ul>
@@ -10,7 +10,7 @@
         </form>
     </div>
     <div class="container">
-        <h1>Movies Playing in {{city_name}}</h1>
+        <h1 style="color: white;">Movies Playing in {{city_name}}</h1>
         <div class="row">
             {% for emsVersionId, movie in movies_dict.items %}
                 <div class="col-lg-3 col-md-6 mb-4">
@@ -58,12 +58,19 @@
     transform: perspective(1000px) rotateY(10deg);
     box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
 }
+.centered-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    }
 #city-results {
     position: absolute;
     top: 100%; 
     left: 0;
     right: 0;
     z-index: 1000; 
+    width: 217px;
     background-color: #fff; 
     border: 1px solid #ccc; /* Light border around the dropdown */
     border-top: none; /* Seamless connection with the search bar */
@@ -124,7 +131,7 @@ document.getElementById('submit-btn').addEventListener('click', function() {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            window.location.href = '{% url "restraunt_list" %}';
+            window.location.href = '{% url "movies_home" %}';
         } else {
             alert('Failed to save selection.');
         }

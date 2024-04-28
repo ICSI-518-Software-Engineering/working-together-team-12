@@ -171,6 +171,7 @@ def history(request):
         'bookings': bookings
     }
     return render(request, 'history.html', context)
+
 @login_required
 def home(request):
     return render(request, 'startingpage.html')

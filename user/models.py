@@ -62,3 +62,6 @@ class MovieTickets(models.Model):
 
     def __str__(self):
         return f"{self.movie} - {self.showtime} - {self.user} - {self.booking_id}"
+    
+
+    

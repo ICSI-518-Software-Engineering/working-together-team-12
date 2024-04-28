@@ -4,14 +4,14 @@
 
 {% block content %}
 <div id="restraunt_home">
-    <div class="float-right mb-3">
+    <div class="centered-container">
         <form class="form-inline position-relative">
             <input class="form-control mr-sm-2" id ='city-search'; type="search" placeholder="change location" aria-label="Search" name="query">
             <ul id="city-results" class="list-group" style="display: none;"></ul>
             <button id='submit-btn' class="btn btn-outline-success my-2 my-sm-0" type="submit" style="background-color: lightgreen;">Search</button>
         </form>
     </div>
-    <div class="py-5" style="margin-left:10px;">
+    <div class="py-3" style="margin-left:10px;">
         <h1 class="mb-4" style="color: white;">Restraunts near {{city_name}}</h1>
         <div class="row">
             {% for restraunt in restraunts %}
@@ -35,6 +35,12 @@
 </div>
 
 <style>
+    .centered-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    }
     #restraunt_home{
     background-image: url("/static/Restaurants_c.jpg");
         position: relative; 
@@ -59,15 +65,16 @@
     box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
 }
 #city-results {
-    position: absolute; /* Position relative to the form's relative positioning */
-    top: 100%; /* Place directly below the search bar */
+    position: absolute; 
+    top: 100%;
     left: 0;
     right: 0;
-    z-index: 1000; /* Ensure it appears above other content */
-    background-color: #fff; /* Match your site's theme */
-    border: 1px solid #ccc; /* Light border around the dropdown */
-    border-top: none; /* Seamless connection with the search bar */
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1); /* Optional: Adds a subtle shadow */
+    width: 217px;
+    z-index: 1000; 
+    background-color: #fff; 
+    border: 1px solid #ccc;
+    border-top: none;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
     list-style: none;
 }
 .list-group li {
