@@ -1,0 +1,311 @@
+
+ {% extends 'base.html' %} 
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="profile-container">
+    <h2>Edit Profile</h2>
+    <form method="POST" enctype="multipart/form-data" class="profile-form">
+        {% csrf_token %}
+        <div class="form-section">
+            {% if user.userprofile.profile_pic %}
+                <div class="current-profile-pic">
+                    <img src="{{ user.userprofile.profile_pic.url }}" alt="Current profile pic" class="img-responsive">
+                </div>
+            {% endif %}
+            {{ profile_form.as_p }}
+        </div>
+        <button type="submit" class="update-btn">Update Profile</button>
+    </form>
+
+    <h3>Add Payment Detail</h3>
+    <form method="POST" class="payment-form">
+        {% csrf_token %}
+        <div class="form-row">
+            <input type="hidden" name="form_type" value="add_payment_form">
+            <div class="form-group">
+                <label for="id_card_number">Card Number:</label>
+                {{ payment_form.card_number }}
+            </div>
+            <div class="form-group">
+                <label for="id_cvv">CVV:</label>
+                {{ payment_form.cvv }}
+            </div>
+            <div class="form-group">
+                <label for="id_card_holder_name">Card Holder Name:</label>
+                {{ payment_form.card_holder_name }}
+
+            </div>
+            <div class="form-group d-flex flex-row">
+                <div class="pr-3">
+                    <label for="id_expiry_month">Expiry Month:</label>
+                    {{ payment_form.expiry_month }}
+
+                </div>
+                <div>
+                    <label for="id_expiry_year">Expiry Year:</label>
+                    {{ payment_form.expiry_year }}
+                </div>
+            </div>
+            <button type="submit" name="add_payment" class="add-payment-btn">Add Payment</button>
+        </div>
+    </form>
+
+    <div class="payment-details-card">
+        <h3 class="payment-details-header">Payment Details</h3>
+        <ul class="payment-details-list">
+            {% for payment_detail in user.userprofile.payment_details.all %}
+            <li class="payment-detail-item">
+                <strong>Card Holder Name:</strong> {{ payment_detail.card_holder_name }}
+                <strong>Card Number:</strong> **** **** **** {{ payment_detail.card_number|slice:"-4:" }}
+                <strong>Expiry Date:</strong> {{ payment_detail.expiry_date|date:"m/Y" }}
+            </li>
+            {% empty %}
+            <li class="no-payment">No payment details added.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<style>
+    .payment-details-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    .payment-details-list li {
+        background-color: #f7f7f7;
+        border: 1px solid #ddd;
+        margin-top: 10px;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .payment-details-list li:first-child {
+        margin-top: 0;
+    }
+    .payment-detail {
+        font-size: 16px;
+        color: #333;
+    }
+    .payment-detail strong {
+        font-weight: 600;
+    }
+    .payment-details-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .card-number {
+        letter-spacing: 2px;
+    }
+    .expiry-date {
+        color: #555;
+    }
+    .no-payment {
+        text-align: center;
+        padding: 20px;
+        background-color: #fafafa;
+    }
+     .payment-form .form-section {
+        margin-bottom: 20px;
+    }
+    .payment-form label, .payment-details-list label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .payment-form input, .payment-form select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .add-payment-btn {
+        background-color: #4CAF50;
+        color: white;
+        /* padding: 10px 15px; */
+        border: none;
+        max-height: 50px;
+        margin-top: 25px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .add-payment-btn:hover {
+        background-color: #45a049;
+    }
+    .payment-details-list {
+        list-style-type: none;
+        padding: 0;
+    }
+    .payment-details-list li {
+        margin-bottom: 10px;
+        background-color: #f2f2f2;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    .payment-form {
+        margin-top: 20px;
+        background-color: #f4f4f4;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .payment-form .form-section {
+        margin-bottom: 20px;
+    }
+    .payment-form label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .payment-form input[type="text"],
+    .payment-form input[type="date"],
+    .payment-form input[type="number"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .add-payment-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .add-payment-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .payment-details-list {
+        list-style-type: none;
+        padding-left: 0;
+        margin-top: 20px;
+    }
+    .payment-details-list li {
+        background-color: #fff;
+        margin-bottom: 10px;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+     .payment-details-list {
+        list-style-type: none;
+        padding: 0;
+    }
+    .payment-details-list li {
+        margin-bottom: 10px;
+        background-color: #f2f2f2;
+        padding: 10px;
+        border-radius: 5px;
+    }
+    .profile-container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .profile-form h3 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+    .profile-form .form-section {
+        margin-bottom: 20px;
+    }
+    .profile-form label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .profile-form input[type="text"],
+    .profile-form input[type="email"],
+    .profile-form input[type="password"],
+    .profile-form textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box; /* Adds padding without increasing the width of the input */
+    }
+    .profile-form input[type="file"] {
+        border: none;
+    }
+    .update-btn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .update-btn:hover {
+        background-color: #45a049;
+    }
+    .form-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.form-group {
+    margin-right: 20px;
+}
+
+.card-expiry {
+    display: flex;
+    justify-content: start;
+}
+
+.card-expiry label {
+    margin-right: 10px;
+}
+
+.payment-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.payment-form .form-group {
+    flex-basis: calc(50% - 20px); /* Adjust based on form size */
+}
+
+/* Adjustments for small screens */
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+    }
+
+    .form-group {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+
+    .card-expiry {
+        flex-direction: column;
+    }
+
+    .card-expiry label {
+        margin-right: 0;
+    }
+
+    .payment-form .form-group {
+        flex-basis: 100%; /* Full width on small screens */
+    }
+}
+
+</style>
+{% endblock %}

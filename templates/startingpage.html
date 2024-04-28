@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load static %} 
+{% block title %}Starting Page{% endblock %}
+{% block content %}
+<style>
+    .starting-page-container {
+        width: 100%;
+        max-width: 800px; 
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 15px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(8.5px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 20px;
+        margin: 40px auto;
+        text-align: center;
+        display: flex;
+        flex-wrap: wrap; 
+        justify-content: space-around; 
+        align-items: center;
+    }
+
+    .input-section {
+        margin: 10px; 
+        display: flex;
+        align-items: center;
+    }
+
+    .input-section h2 {
+        margin-right: 10px; 
+        font-size: 18px; 
+        color: #000;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.4); 
+    }
+
+    #city-search, #date-input {
+        padding: 10px;
+        border-radius: 20px;
+        border: 1px solid #ced4da;
+        background-color: rgba(255,255,255,0.7);
+        margin-right: 10px; 
+    }
+
+    #city-results {
+        position: absolute;
+        width: calc(100% - 40px);
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        list-style: none;
+        padding-left: 0;
+        max-height: 150px;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+
+    #city-results li {
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    #city-results li:hover {
+        background-color: #f2f2f2;
+    }
+
+    #submit-btn {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 123, 255, 0.4);
+    }
+
+    #submit-btn:hover {
+        background-color: #0056b3;
+        cursor: pointer;
+    }
+    .starting-page-container, .services-container {
+        width: 100%;
+        max-width: 800px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 15px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(8.5px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        padding: 20px;
+        margin: 40px auto;
+        text-align: center;
+    }
+
+    .input-section {
+        margin: 10px;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-section h2, .services-container h2 {
+        margin-right: 10px;
+        font-size: 18px;
+        color: #000;
+    }
+
+    #city-search, #date-input, #submit-btn {
+        padding: 10px;
+        margin-top: 0px;
+        border-radius: 20px;
+        border: none;
+    }
+
+    #submit-btn {
+        background-color: #007bff;
+        color: white;
+        box-shadow: 0 2px 4px rgba(0, 123, 255, 0.4);
+        width: 80px;
+    }
+
+    #submit-btn:hover {
+        background-color: #0056b3;
+    }
+    .services-container h2{
+        font-size: 35px;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+        font-weight: bold;
+    }
+
+    .service-icon {
+        width: 100px;
+        height: 100px;
+        margin: 20px;
+        transition: transform 0.3s ease;
+    }
+
+    .service-icon:hover {
+        transform: scale(1.1);
+    }
+
+    .services-container {
+        padding-top: 30px;
+        min-height: 500px;
+    }
+    a{
+        text-decoration: none;
+    }
+    .service-item {
+        margin: 20px;
+        display: inline-block;
+        min-height: 250px;
+    }
+    .service-item p {
+        margin-left: 40px;
+        font-size: 25px;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.4); 
+        text-decoration: none;  
+    }
+    .service-item img {
+        height: 200px;
+        width: 200px;
+        transition: transform 0.3s ease;
+    }
+
+    .service-item img:hover {
+        transform: scale(1.05);
+    }
+    .fa-10x{
+    margin-bottom: 20px;
+    color: #FF5733;
+    /* color: #000; */
+    }
+    
+</style>
+
+<div class="starting-page-container">
+    <div class="input-section">
+        <h2>Select Location:</h2>
+        <input type="text" id="city-search" placeholder="Start typing a city name...">
+        <ul id="city-results" style="display: none;"></ul>
+    </div>
+    <div class="input-section">
+        <h2>Select Date:</h2>
+        <input type="date" id="date-input">
+        <button id="submit-btn">Submit</button>
+    </div>
+</div>
+<div class="services-container text-center">
+    <h2 style="margin-bottom: 30px;"> Our Services</h2>
+    <div class="row mt-4 justify-content-center">
+        <div class="col-sm-4 service-item">
+            <a href="{% url 'movies_home' %}">
+                <!-- <img src="{% static 'movies.jpg' %}" alt="Movies" class="service-icon">
+                 -->
+                 <div class="service-icon">
+                    <i class="fas fa-film fa-10x"></i> 
+                    <p>Movies</p>
+                 </div>
+            </a>
+        </div>
+        <div class="col-sm-4 service-item">
+            <a href="{% url 'hotel_list' %}">
+                <!-- <img src="{% static 'hotels.png' %}" alt="Hotels" class="service-icon">
+                 -->
+                 <div class="service-icon">
+                    <i class="fas fa-hotel fa-10x"></i> 
+                    <p style="margin-left: 65px;">Hotels</p>
+                 </div>
+            </a>
+        </div>
+        <div class="col-sm-4 service-item">
+            <a href="{% url 'restraunt_list' %}">
+                <!-- <img src="{% static 'restraunt.png' %}" alt="Restraunts" class="service-icon">
+                 -->
+                 <div class="service-icon">
+                    <i class="fas fa-utensils fa-10x"></i> 
+                    <p style="margin-left: 20px;">Restraunts</p>
+                 </div>
+            </a>
+        </div>
+        <div class="col-sm-4 service-item">
+            <a href="{% url 'search_flights' %}">
+                <!-- <img src="{% static 'flights1.png' %}" alt="Flights" class="service-icon"> -->
+                <div class="service-icon">
+                    <i class="fas fa-plane fa-10x"></i> 
+                    <p>Flights</p>
+                 </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+
+document.getElementById('city-search').addEventListener('input', function() {
+    const value = this.value;
+    fetch(`/search-cities/?term=${value}`)
+        .then(response => response.json())
+        .then(data => {
+            const ul = document.getElementById('city-results');
+            if (data.length > 0) {
+                ul.innerHTML = '';  
+                data.slice(0, 5).forEach(city => {  // Limit to 5 results
+                    const li = document.createElement('li');
+                    li.textContent = `${city.city_name}, ${city.state_name}`;
+                    ul.appendChild(li);
+                    li.onclick = function() {
+                        document.getElementById('city-search').value = this.textContent;
+                        ul.style.display = 'none'; 
+                    };
+                });
+                ul.style.display = 'block';  
+            } else {
+                ul.style.display = 'none'; 
+            }
+        });
+});
+document.getElementById('submit-btn').addEventListener('click', function() {
+    const city = document.getElementById('city-search').value;
+    const date = document.getElementById('date-input').value;
+    fetch('/save-selection/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': '{{ csrf_token }}' 
+        },
+        body: `city_name=${city}&visit_date=${date}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            window.location.href = data.redirect_url;
+        } else {
+            alert('Failed to save selection.');
+        }
+    });
+});
+</script> 
+{% endblock %}
