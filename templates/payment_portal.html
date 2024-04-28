@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 class="payment-portal-header">Booking Details</h2>
+<div class="container">
+    <p><strong>Movie:</strong> {{ ticket.movie }}</p>
+    <p><strong>Theater:</strong> {{ ticket.theater }}</p>
+    <p><strong>Showtime:</strong> {{ ticket.showtime }}</p>
+    <p><strong>Number of Tickets:</strong> {{ number_of_tickets }}</p>
+    <p><strong>Total Price:</strong> ${{ total_price }}</p>
+
+    <h2>Pay With</h2>
+    <form id="payment-form" action="{% url 'payment_confirmation' %}" method="post">
+        {% csrf_token %}
+        <div class="custom-select-wrapper">
+        <select name="payment_method">
+            {% for option in payment_options %}
+                <option value="{{ option.id }}">Card ending in {{ option.card_number|slice:"-4:" }}</option>
+            {% endfor %}
+        </select>
+    </div>
+        <input type="hidden" name="booking_id" value="{{ ticket.booking_id }}">
+        <input type="hidden" name="total_price" value="{{ total_price }}">
+        <button type="button" id="finish-payment">Finish Payment</button>
+    </form>
+</div>
+<style>
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: left;
+    }
+
+    h2 {
+        text-align: center;
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    p {
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 10px 0;
+    }
+
+    p strong {
+        color: #333;
+        font-weight: 600;
+    }
+
+    form {
+        margin-top: 20px;
+    }
+
+    select, button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f8f8f8;
+        box-sizing: border-box; 
+    }
+
+    button {
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+    .payment-portal-header {
+        text-align: center;
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 30px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+        .container {
+            width: 90%;
+            padding: 10px;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+
+        p {
+            font-size: 14px;
+        }
+    }
+
+
+
+
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+.custom-select-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .custom-select-wrapper select {
+        width: 100%;
+        cursor: pointer;
+        text-indent: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        appearance: none; 
+        -webkit-appearance: none; /* For Safari */
+        -moz-appearance: none; /* For Firefox */
+        background-color: #f8f8f8;
+    }
+
+    /* Creating the custom arrow */
+    .custom-select-wrapper::after {
+        content: '▼'; /* Dropdown arrow */
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        pointer-events: none; 
+        color: #333;
+        font-size: 12px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('finish-payment').addEventListener('click', function() {
+        var form = document.getElementById('payment-form');
+        var formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken'), // Ensure CSRF token is sent
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.redirect_url) {
+                window.location.href = data.redirect_url;
+            } else {
+                alert('Payment failed or invalid data');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+{% endblock %}
