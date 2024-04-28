@@ -339,7 +339,57 @@ def showtime_detail(request, emsVersionId, theaterId, showtime):
 
 
 
+def restraunt_list(request):
+    latest_selection = CitySelection.objects.filter(user=request.user).order_by('-created').first()
+    if latest_selection is not None:
+        parts = latest_selection.city_name.split(',')
+        if len(parts) >= 2:
+            city_name = parts[0].strip()  
+            state_name = parts[1].strip() 
+        matching_city = City.objects.filter(city_name=city_name, state_name=state_name).first()    
+        if matching_city:
+                    data = {
+                        'city_name': matching_city.city_name,
+                        'state_name': matching_city.state_name,
+                        'latitude': str(matching_city.lat),
+                        'longitude': str(matching_city.lng)
+                    }
+    else:
+         data = {
+                        'city_name': 'Albany',
+                        'state_name': 'New York',
+                        'latitude': '42.6850',
+                        'longitude': '73.8248'
+                    } 
 
+    url = "https://local-business-data.p.rapidapi.com/search"
+    querystring = {
+        "query": f"hotels near {data['city_name']}, {data['state_name']}",
+        "limit": "10",
+        "lat": data['latitude'],
+        "lng": data['longitude'],
+        "zoom": "13",
+        "language": "en",
+        "region": "us"
+    }
+    print(querystring)
+    headers = {
+        "X-RapidAPI-Key": "f980ede61dmshd87d831abfdc365p13d4e5jsncfcae06fb6c8",
+        "X-RapidAPI-Host": "local-business-data.p.rapidapi.com"
+    }
+
+    response = requests.get(url, headers=headers, params=querystring)
+    restraunts = response.json().get('data', [])  
+    # print(hotels)
+    request.session['restraunts'] = restraunts
+
+    return render(request, 'restraunts_home.html', {'restraunts': restraunts})
+def restraunt_detail(request, business_id):
+    restraunts = request.session.get('restraunts', [])
+    restraunt = next((item for item in restraunts if item['business_id'] == business_id), None)
+    if restraunt is None:
+        raise Http404("restraunt does not exist")
+    return render(request, 'restraunt_detail.html', {'restraunt': restraunt})
 
 
 
