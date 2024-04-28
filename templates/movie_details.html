@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="movie-details">
+    <h2>{{ movie_data.film_name }}</h2>
+    <div class="movie-info">
+        <div class="poster">
+            <img src="{{ movie_data.images.poster.1.medium.film_image }}" alt="{{ movie_data.film_name }}">
+        </div>
+        <div class="details">
+            <p><strong>Release Date:</strong> {{ movie_data.release_dates.0.release_date }}</p>
+            <p><strong>Duration:</strong> {{ movie_data.duration_mins }} mins</p>
+            <p><strong>Genre:</strong>
+                {% for genre in movie_data.genres %}
+                    {{ genre.genre_name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p><strong>Rating:</strong> {{ movie_data.age_rating.0.rating }}</p>
+            <p><strong>IMDb Rating:</strong> {{ movie_data.review_stars }}/5 stars</p>
+            <p><strong>Director:</strong> 
+                {% for director in movie_data.directors %}
+                    {{ director.director_name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p><strong>Cast:</strong>
+                {% for actor in movie_data.cast %}
+                    {{ actor.cast_name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p><strong>Synopsis:</strong> {{ movie_data.synopsis_long }}</p>
+            <p><strong>Review:</strong> {{ movie_data.review_txt }}</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
