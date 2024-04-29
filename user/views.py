@@ -908,7 +908,9 @@ def flight_confirmation(request):
         return render(request, "passenger_details.html", context)
 
 def add_passengers(request):
+    print("inside add passenders")
     if request.method == 'POST':
+        print("inside post")
         passengers = []
         i = 0
         while True:
@@ -954,8 +956,9 @@ def add_passengers(request):
             thank_you_note="Thank you for your booking!"
         )
         booking.save()
-
+        print("before user profile line")
         user_instance = get_object_or_404(UserProfile, user=request.user)
+        print("after user profile")
         if(request.POST.get('save_for_future') == 'on'):
             print("saving card")
             save_card(user_instance,request.POST.get('card_number'), request.POST.get('cvv'), request.POST.get('expiry_date').split('-')[1], request.POST.get('expiry_date').split('-')[0], request.POST.get('card_holder_name'))
