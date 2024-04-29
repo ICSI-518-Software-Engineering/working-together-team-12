@@ -54,6 +54,10 @@ def register(request):
             # recipient_list = [email]
             # print(email)
             # send_mail(subject, message, email_from, recipient_list)
+            user_instance = user
+            UserProfile.objects.update_or_create(
+                user=user_instance
+            )
             send_mail(subject, plain_message, email_from, recipient_list, html_message=html_message)
 
             return JsonResponse({'success': True, 'redirect_url': reverse('login') })
