@@ -1,8 +1,43 @@
 
- {% extends 'base.html' %} 
-{% load crispy_forms_tags %}
+{% extends 'base.html' %} 
+{% load static %}
 
 {% block content %}
+<script>
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#blah').attr('src', e.target.result);
+            };
+            document.getElementById("uploadLabel").style.display = 'none';
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function readURL2(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#blah2').attr('src', e.target.result);
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $("#imgInp").change(function () {
+        var image_x = document.getElementById('blah2');
+        if (image_x) {
+            // If image exists, replace it using readURL2
+            readURL2(this);
+        } else {
+            // If image doesn't exist, use readURL
+            readURL(this);
+        }
+    });
+</script>
+
 <div class="tab-container">
 <div class="tab">
     <button class="tablinks" onclick="openTab(event, 'Profile')">Personal Details</button>
@@ -20,12 +55,14 @@
         <div class="form-group">
             <label for="profileImage">Profile Image:</label>
             {% if user_profile.profile_pic %}
-                <img src="{{ user_profile.profile_pic.url }}" alt="Current Profile Pic" class="profile-pic">
-                <input type="file" id="profileImage" name="profileImage" class="file-input">
+                <img src="{{ user_profile.profile_pic.url }}" id="blah2" alt="Current Profile Pic" class="profile-pic">
+                <input type="file" id="profileImage" name="profileImage" class="file-input"  onchange="readURL2(this);">
             {% else %}
                 <div class="no-image">
-                    Upload Picture
-                    <input type="file" id="profileImage" name="profileImage" class="file-input">
+                    <label id ="uploadLabel" for="no-image">Upload Image</label>
+                    
+                    <input type='file' id="profileImage" name="profileImage" class="file-input"  onchange="readURL(this);" />
+                    <img id="blah" class="profile-pic2" src="#"  />
                 </div>
             {% endif %}
         </div>
@@ -264,7 +301,7 @@
                     <td>{{ booking.theater }}</td>
                     <td>{{ booking.showtime }}</td>
                     <td>{{ booking.tickets }}</td>
-                    <td data-toggle="modal" data-target="#ReviewModal" id="{{booking.booking_id}}">Review</td>
+                    <td type="button" class="btn btn-primary" data-toggle="modal" data-target="#ReviewModal" id="{{booking.booking_id}}">Review</td>
 
                 </tr>
                 {% empty %}
@@ -285,15 +322,16 @@
                         </button>
                     </div>
                     <div class="modal-body">
+                        <form id="ReviewForm">
                             <div class="form-group">
                                 <label for="Rating">Rating :</label>
-                                <input type="text" class="form-control" id="Rating" name="card_number" required>
+                                <input type="text" class="form-control" id="Rating" name="Rating" required>
                             </div>
                             <div class="form-group">
                                 <label for="Comments">Comments:</label>
-                                <input type="text" class="form-control" id="Comments" name="card_holder_name" required>
+                                <textarea class="form-control" id="Comments" name="Comments" required></textarea>
                             </div>
-
+                        </form>
                     </div>
                     
                     <div class="modal-footer">
@@ -325,7 +363,7 @@
                     <td>{{ booking.2 }}</td>
                     <td>{{ booking.3 }} minutes</td>
                     <td>{{ booking.4 }}</td>
-                    <td data-toggle="modal" data-target="#ReviewModal" id="{{booking.0}}">Review</td>
+                    <td type="button" class="btn btn-primary" data-toggle="modal" data-target="#ReviewModal" id="{{booking.0}}">Review</td>
                 </tr>
                 {% empty %}
                 <tr>
@@ -356,7 +394,7 @@
                     <td>{{ booking.2 }}</td>
                     <td>{{ booking.3 }}</td>
                     <td>{{ booking.4 }}</td>
-                    <td data-toggle="modal" data-target="#ReviewModal" id="{{booking.0}}">Review</td>
+                    <td type="button" class="btn btn-primary" data-toggle="modal" data-target="#ReviewModal" id="{{booking.0}}">Review</td>
                 </tr>
                 {% empty %}
                 <tr>
@@ -383,7 +421,7 @@
                     <td>{{ booking.0 }}</td>
                     <td>{{ booking.1 }}</td>
                     <td>{{ booking.2 }}</td>
-                    <td data-toggle="modal" data-target="#ReviewModal" id="{{booking.0}}">Review</td>
+                    <td type="button" class="btn btn-primary" data-toggle="modal" data-target="#ReviewModal" id="{{booking.0}}">Review</td>
                 </tr>
                 {% empty %}
                 <tr>
@@ -577,6 +615,13 @@ table{
     height: 100px; /* must be the same as width to maintain aspect ratio */
     border-radius: 50%; /* makes the image round */
     object-fit: cover; /* ensures the image covers the space without distorting */
+  
+}
+.profile-pic2 {
+    width: 100%; /* Ensure the image fills the container */
+    height: 100%; /* Ensure the image fills the container */
+    border-radius: 50%; /* Make the image round */
+    object-fit: cover; 
 }
 
 .no-image {
@@ -597,9 +642,11 @@ table{
     opacity: 0; /* Makes the actual file input invisible */
     width: 100px; /* Full width of the no-image div */
     height: 100px; /* Full height of the no-image div */
-    position: absolute; /* Position it over the no-image div */
+    /* Position it over the no-image div */
     cursor: pointer; /* Cursor changes to pointer to indicate it's clickable */
     border-radius: 50%; /* Maintains the round shape */
+    position: relative;
+    overflow: hidden;
 }
 
 .file-input:hover + .no-image {
@@ -906,6 +953,8 @@ table{
     padding: 20px; /* Padding inside the content area */
     overflow: auto; /* In case of overflow, show scrollbars */
 }
+
+
 .booking-history .booking-history-header {
         text-align: center;
         font-size: 28px;
@@ -1315,10 +1364,24 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log("Inside submit review")
         event.preventDefault(); // Prevent the default form submission
 
-        // Get the payment details
-        var cardNumber = document.getElementById('Rating').value;
-        var cardHolderName = document.getElementById('Comments').value;
-        $('#ReviewModal').modal('hide');
+        // Get the rating value
+        var rating = parseInt(document.getElementById('Rating').value);
+
+        // Check if the rating is between 1 and 5
+        if (rating >= 1 && rating <= 5) {
+            // Proceed with submitting the review
+            var review = document.getElementById('Comments').value;
+            // Submit the review
+            $('#ReviewModal').modal('hide');
+        } else {
+            // Display an error message or take appropriate action
+            alert('Please enter a rating between 1 and 5.');
+        }
+
+        // // Get the payment details
+        // var cardNumber = document.getElementById('Rating').value;
+        // var cardHolderName = document.getElementById('Comments').value;
+        // $('#ReviewModal').modal('hide');
 
     });
     </script>
