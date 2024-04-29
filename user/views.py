@@ -446,8 +446,8 @@ def movies_home(request):
     theaters_query = {"latitude":data['latitude'],"longitude":data['longitude'], "radius": "50"}
     print('theaters_query',theaters_query)
     theaters_headers = {
-        'X-RapidAPI-Key': 'da1984d06cmsh9711b9a7130e210p1b2982jsn00e5c7f734da',  
-        "X-RapidAPI-Host": "flixster.p.rapidapi.com"
+        'X-RapidAPI-Key': '4cd2a83113msh003c3daa47c1edfp18beb1jsnc967cf4b90e8',
+        'X-RapidAPI-Host': 'flixster.p.rapidapi.com'
     }
     theaters_response = requests.get(theaters_url, headers=theaters_headers, params=theaters_query)
     print(theaters_response,'theaters_response')
@@ -514,7 +514,7 @@ def movie_detail(request, emsVersionId):
     querystring = {"emsVersionId": emsVersionId}
 
     headers = {
-        'X-RapidAPI-Key': 'da1984d06cmsh9711b9a7130e210p1b2982jsn00e5c7f734da',
+        'X-RapidAPI-Key': '4cd2a83113msh003c3daa47c1edfp18beb1jsnc967cf4b90e8',
         'X-RapidAPI-Host': 'flixster.p.rapidapi.com'
     }
     response = requests.get(url, headers=headers, params=querystring)
@@ -613,7 +613,7 @@ def hotel_list(request):
         "region": "us"
     }
     headers = {
-        "X-RapidAPI-Key": "da1984d06cmsh9711b9a7130e210p1b2982jsn00e5c7f734da",
+        'X-RapidAPI-Key': '4cd2a83113msh003c3daa47c1edfp18beb1jsnc967cf4b90e8',
         'X-RapidAPI-Host': 'local-business-data.p.rapidapi.com'
     }
 
@@ -755,7 +755,7 @@ def restraunt_list(request):
     }
     print(querystring)
     headers = {
-        'X-RapidAPI-Key': 'da1984d06cmsh9711b9a7130e210p1b2982jsn00e5c7f734da',
+        'X-RapidAPI-Key': '4cd2a83113msh003c3daa47c1edfp18beb1jsnc967cf4b90e8',
         'X-RapidAPI-Host': 'local-business-data.p.rapidapi.com'
     }
 
@@ -865,8 +865,8 @@ def search_flights(request):
         print("origin is", origin)
         print("destination is", destination)
         headers = {
-            "X-RapidAPI-Key": "da1984d06cmsh9711b9a7130e210p1b2982jsn00e5c7f734da",
-            "X-RapidAPI-Host": "priceline-com-provider.p.rapidapi.com"
+            'X-RapidAPI-Key': '4cd2a83113msh003c3daa47c1edfp18beb1jsnc967cf4b90e8',
+            'X-RapidAPI-Host': 'priceline-com-provider.p.rapidapi.com'
         }
         origin_response = requests.get(
             "https://priceline-com-provider.p.rapidapi.com/v1/flights/locations",
@@ -989,8 +989,8 @@ def add_passengers(request):
 
 def flight_results(request, origin_id, destination_id, date, sort_order,class_type):
     headers = {
-        "X-RapidAPI-Key": "da1984d06cmsh9711b9a7130e210p1b2982jsn00e5c7f734da",
-        "X-RapidAPI-Host": "priceline-com-provider.p.rapidapi.com"
+        'X-RapidAPI-Key': '4cd2a83113msh003c3daa47c1edfp18beb1jsnc967cf4b90e8',
+        'X-RapidAPI-Host': 'priceline-com-provider.p.rapidapi.com'
     }
     querystring = {
         "location_arrival": destination_id,
