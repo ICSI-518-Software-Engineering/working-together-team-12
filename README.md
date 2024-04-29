@@ -1,4 +1,5 @@
-#BookNow Project
+BookNow Project
+
 Welcome to the BookNow project! This is a one-stop booking platform that allows users to book movie tickets, flights, hotels, and restaurants all in one place.
 
 GitHub Link:
